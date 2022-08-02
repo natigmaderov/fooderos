@@ -55,6 +55,16 @@ class UserController extends Controller
     {
         return response()->json(auth()->user());
     }
+    
+    
+      public function logout()
+    {
+        Auth::logout();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Successfully logged out',
+        ]);
+    }
 
     public function refreshToken(){
 
