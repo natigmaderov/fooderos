@@ -68,7 +68,8 @@ class VertificationController extends Controller
                 ]);
                 return response([
                    'message'=>'New Log Created',
-                    'status'=>$status
+                    'status'=>$status,
+                    'name'=>$user->name
                 ],201);
             }
 

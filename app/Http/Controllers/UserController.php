@@ -66,6 +66,14 @@ class UserController extends Controller
         ]);
     }
 
+    public function logout()
+    {
+        Auth::logout();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Successfully logged out',
+        ]);
+    }
     public function refreshToken(){
 
 // Pass true as the first param to force the token to be blacklisted "forever".
