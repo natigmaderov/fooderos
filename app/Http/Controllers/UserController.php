@@ -56,7 +56,14 @@ class UserController extends Controller
 
     public function get_user()
     {
-        return response()->json(auth()->user());
+        if(\auth()->user()){
+            return response()->json(auth()->user());
+
+        }
+
+        return response([
+            'Message'=>"Invalid token"
+        ],500);
     }
 
 
