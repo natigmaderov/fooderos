@@ -13,4 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [\App\Http\Controllers\UserController::class, 'create']);
+Route::get('/', function (){
+    return view('welcome');
+});

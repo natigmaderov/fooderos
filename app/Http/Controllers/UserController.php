@@ -16,6 +16,8 @@ class UserController extends Controller
 {
     public function register(Request $request){
 
+
+
         $request->validate([
            'name' =>'required',
             'phone'=>'required',
@@ -55,8 +57,8 @@ class UserController extends Controller
     {
         return response()->json(auth()->user());
     }
-    
-    
+
+
       public function logout()
     {
         Auth::logout();
@@ -66,14 +68,6 @@ class UserController extends Controller
         ]);
     }
 
-    public function logout()
-    {
-        Auth::logout();
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Successfully logged out',
-        ]);
-    }
     public function refreshToken(){
 
 // Pass true as the first param to force the token to be blacklisted "forever".

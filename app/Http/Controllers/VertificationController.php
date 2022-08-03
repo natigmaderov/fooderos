@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Http;
+
 class VertificationController extends Controller
 {
 
@@ -14,9 +16,26 @@ class VertificationController extends Controller
     //And Creating Log
 
     public function check(Request $request){
+
+        $recaptcha = false;
         $request->validate([
-            'phone'=>'required'
+            'phone'=>'required',
+            'reKey'=> 'required'
         ]);
+
+
+
+        $secretkey = env('GOOGLE');
+        $userIP = $_SERVER['REMOTE_ADDR'];
+        $url = "https://www.google.com/recaptcha/api/siteverify?secret=$secretkey&response=$request->reKey&remoteip=$userIP";
+        $response = \file_get_contents($url);
+        $response = json_decode($response);
+
+        if($response->success){
+            $recaptcha = true;
+        }
+
+
         $status = 0;
         if($user = User::where('phone', $request->input('phone'))->first()){
             $status = 1;
@@ -32,7 +51,8 @@ class VertificationController extends Controller
                    return response([
                        'message' => 'Acount Blocked',
                        'name'=>$user->name??'',
-                       'status'=>$status
+                       'status'=>$status,
+                       'recaptcha' => $recaptcha
                    ],401);
                }
                $check->status = 1;
@@ -42,7 +62,8 @@ class VertificationController extends Controller
                 return response([
                     'message'=>'Success',
                     'name'=>$user->name??'',
-                    'status'=>$status
+                    'status'=>$status,
+                    'recaptcha' => $recaptcha
                 ],201);
 
             }
@@ -52,7 +73,8 @@ class VertificationController extends Controller
                 return response([
                     'message'=>'Success',
                     'name'=>$user->name??'',
-                    'status'=>$status
+                    'status'=>$status,
+                    'recaptcha' => $recaptcha
                 ],201);
             }
         }
@@ -69,7 +91,8 @@ class VertificationController extends Controller
                 return response([
                    'message'=>'New Log Created',
                     'status'=>$status,
-                    'name'=>$user->name
+                    'name'=>$user->name,
+                    'recaptcha' => $recaptcha
                 ],201);
             }
 
