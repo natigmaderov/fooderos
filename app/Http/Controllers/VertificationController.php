@@ -47,13 +47,14 @@ class VertificationController extends Controller
             //24 hours block checking
             $time =strtotime( $check->updated_at);
             $current_date = strtotime(Carbon::now());
-            $val =($current_date -$time)/60/60;
+            $val =($current_date -$time);
 
             if ($check->status == 0){
                if($val < 24){
                    return response([
                        'message' => 'Acount Blocked',
                        'name'=>$user->name??'',
+                       'time'=>round(24-$val/60),
                        'status'=>$status,
                        'recaptcha' => $recaptcha
                    ],401);
