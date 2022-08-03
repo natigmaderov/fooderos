@@ -9,6 +9,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Http;
 
+
 class VertificationController extends Controller
 {
 
@@ -25,11 +26,13 @@ class VertificationController extends Controller
 
 
 
-        $secretkey = env('GOOGLE');
-        $userIP = $_SERVER['REMOTE_ADDR'];
+
+        $secretkey = '6Lcdaz4hAAAAALKRTJ63NBcHGFYt5nifQPmf3UJy';
+        $userIP = \Request::ip();
         $url = "https://www.google.com/recaptcha/api/siteverify?secret=$secretkey&response=$request->reKey&remoteip=$userIP";
         $response = \file_get_contents($url);
         $response = json_decode($response);
+
 
         if($response->success){
             $recaptcha = true;

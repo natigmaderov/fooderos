@@ -15,6 +15,7 @@ Route::group(['middleware'=>'api'] , function ($routes){
     Route::post('user',[\App\Http\Controllers\UserController::class ,'get_user']);
     Route::post('refresh',[\App\Http\Controllers\UserController::class, 'refreshToken']);
     Route::post('logout',[\App\Http\Controllers\UserController::class, 'logout']);
+    Route::post('active',[\App\Http\Controllers\UserController::class,'active']);
 
 
 });

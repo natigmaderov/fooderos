@@ -5,6 +5,7 @@ use App\Models\PhoneVerfy;
 
 
 use App\Models\User;
+use http\Env\Response;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Validator;
@@ -82,5 +83,22 @@ class UserController extends Controller
 
 
     }
+
+    public function active(Request $request){
+        $active = 0;
+        if(\auth()->user()) {
+            $active = 1;
+            return response([
+               "status"=>$active
+            ],201);
+        }
+            return response([
+                "status"=>$active
+            ],201);
+
+
+
+    }
+
 
 }
