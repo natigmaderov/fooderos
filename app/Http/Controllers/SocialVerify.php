@@ -5,7 +5,7 @@ use App\Models\SocialUsers;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
-
+use Tymon\JWTAuth\Facades\JWTAuth;
 class SocialVerify extends Controller
 {
     public function verify(Request  $request){
@@ -19,16 +19,23 @@ class SocialVerify extends Controller
         if($SocialUser = SocialUsers::where('email',$request->email)->first()){
 
             if($user = User::where('phone' , $SocialUser->phone)->first()){
+
+
+		  $token = JWTAuth::fromUser($user);
+
+
+
                 return response([
                     'Message'=>"verified user!!!",
-                    'status'=>'1'
+                    'status'=>'1',
+		    'toke'=>$token
                 ],201);
             }
 
             return response([
                'Message'=>"Unverified User Phone Required",
                'status' => '0'
-            ],401);
+            ],201);
 
         }
         $SocialUser = SocialUsers::create([
