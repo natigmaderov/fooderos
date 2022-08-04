@@ -16,6 +16,8 @@ Route::group(['middleware'=>'api'] , function ($routes){
     Route::post('refresh',[\App\Http\Controllers\UserController::class, 'refreshToken']);
     Route::post('logout',[\App\Http\Controllers\UserController::class, 'logout']);
     Route::post('active',[\App\Http\Controllers\UserController::class,'active']);
+    Route::post('social/verify', [\App\Http\Controllers\SocialVerify::class , 'verify']);
+    Route::post('social/create', [\App\Http\Controllers\SocialVerify::class ,'createUser']);
 
 
 });

@@ -22,6 +22,7 @@ class UserController extends Controller
         $request->validate([
            'name' =>'required',
             'phone'=>'required',
+            'appkey'=>'required',
         ]);
         $validator = Validator::make($request->all(),[
             'name' =>'required',
