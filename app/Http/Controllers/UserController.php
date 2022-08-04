@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\PhoneVerfy;
 
 
+use App\Models\SocialUsers;
 use App\Models\User;
 use http\Env\Response;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,7 @@ class UserController extends Controller
         $request->validate([
            'name' =>'required',
             'phone'=>'required',
-            'appkey'=>'required',
+
         ]);
         $validator = Validator::make($request->all(),[
             'name' =>'required',
@@ -35,6 +36,10 @@ class UserController extends Controller
                 'role_id'=>1,
                 'status'=>0
             ]);
+            $social = SocialUsers::where('email',$request->email)->first();
+            $social->phone = $request->phone;
+            $social->user_id = $user->id;
+            $social->save();
 
             if ($token = JWTAuth::fromUser($user)){
 

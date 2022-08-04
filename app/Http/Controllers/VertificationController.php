@@ -95,8 +95,8 @@ class VertificationController extends Controller
                 return response([
                    'message'=>'New Log Created',
                     'status'=>$status,
-                    'name'=>$user->name,
-                    'recaptcha' => $recaptcha
+                    'name'=>$user->name??'',
+                    'recaptcha' =>$recaptcha
                 ],201);
             }
 
@@ -114,7 +114,6 @@ class VertificationController extends Controller
             'otp'=>'required'
         ]);
         $user = PhoneVerfy::where('phone', $request->input('phone'))->first();
-
         if($user->verfied = 0 ){
             return response([
                'message' => 'failed to verfy'
