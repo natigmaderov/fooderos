@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\UserController;
+use App\Models\SocialUsers;
 use App\Models\Visitor;
 use Illuminate\Support\Facades\Http;
 
@@ -139,6 +140,14 @@ class VertificationController extends Controller
                 $token = JWTAuth::fromUser($user);
                 $visitor->user_id = $user->id;
                 $visitor->save();
+                
+                if($social = SocialUsers::where('email',$request->email)->first() and $social->social_provider = $request->social_provider){
+                    $social->phone = $request->phone;
+                    $social->user_id = $user->id;
+                    $social->save();
+                };
+                
+                
                 return response([
                     'Message'=>"Success",
                     'token'=>$token,
@@ -147,22 +156,7 @@ class VertificationController extends Controller
                 ],201);
             }
             else {
-//                $user =  User::create([
-//                    'name'=>$request->input('name'),
-//                    'phone'=>$request->input('phone'),
-//                    'role_id'=>1,
-//                    'status'=>0
-//                ]);
-//
-//                if ($token = JWTAuth::fromUser($user)){
-//                    return response([
-//                        'message'=>'success',
-//                        'token'=>$token,
-//                        'token_type'=>'bearer',
-//                        'expires_in'=>auth()->factory()->getTTL()*60
-//                    ]);
 
-//            }
                 $foo = new UserController();
                 return $foo->register($request ,$visitor);
 

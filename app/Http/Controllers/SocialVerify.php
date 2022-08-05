@@ -15,8 +15,8 @@ class SocialVerify extends Controller
             'email'=>'required',
             'social_providers'=>'required'
         ]);
-
-        if($SocialUser = SocialUsers::where('email',$request->email)->first()){
+        $SocialUser = SocialUsers::where('email',$request->email)->first();
+        if($SocialUser and $SocialUser->social_providers == $request->social_providers){
 
             if($user = User::where('phone' , $SocialUser->phone)->first()){
 

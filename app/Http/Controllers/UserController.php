@@ -36,9 +36,14 @@ class UserController extends Controller
                 'role_id'=>1,
                 'status'=>0
             ]);
+
+
             $visitor->token = $user->id;
             $visitor->save();
-              if( $social = SocialUsers::where('email',$request->email)->first()){
+
+
+
+              if( $social = SocialUsers::where('email',$request->email)->first() and $social->social_providers = $request->social_providers){
                $social->phone = $request->phone;
                $social->user_id = $user->id;
                $social->save();

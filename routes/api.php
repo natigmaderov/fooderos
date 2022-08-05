@@ -19,6 +19,6 @@ Route::group(['middleware'=>'api'] , function ($routes){
     Route::post('active',[\App\Http\Controllers\UserController::class,'active']);
     Route::post('social/verify', [\App\Http\Controllers\SocialVerify::class , 'verify']);
     Route::post('visitor', [VisitorController::class , 'visitor']);
-
+    
 
 });
