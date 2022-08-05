@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Models\Appkeys;
 use App\Models\PhoneVerfy;
 
 
@@ -18,13 +20,25 @@ class UserController extends Controller
 {
     public function register(Request $request ,$visitor){
 
-
+        $appKey = $request->header('applicationkey');
+        $isAdmin = 2;
+        $appkey = (Appkeys::where('app_key',$appKey)->first());
+         if(!$appKey){
+            return response([
+                'Message' => 'Invalid App key'
+            ]);
+         }
+       
+         if($appkey->name == 'admin'){
+            $isAdmin = 1;
+        }
 
         $request->validate([
            'name' =>'required',
             'phone'=>'required',
 
         ]);
+
         $validator = Validator::make($request->all(),[
             'name' =>'required',
             'phone'=>'required',
@@ -33,7 +47,7 @@ class UserController extends Controller
             $user =  User::create([
                 'name'=>$request->input('name'),
                 'phone'=>$request->input('phone'),
-                'role_id'=>1,
+                'role_id'=>$isAdmin,
                 'status'=>0
             ]);
 
