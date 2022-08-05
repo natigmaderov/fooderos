@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\UserController;
+use App\Models\Visitor;
 use Illuminate\Support\Facades\Http;
 
 
@@ -93,7 +94,7 @@ class VertificationController extends Controller
                     'r_count'=>0
                 ]);
                 return response([
-                   'message'=>'New Log Created',
+                   'message'=>'New Log Created !',
                     'status'=>$status,
                     'name'=>$user->name??'',
                     'recaptcha' =>$recaptcha
@@ -111,7 +112,8 @@ class VertificationController extends Controller
         $otp = '0828';
         $request->validate([
             'phone' => 'required',
-            'otp'=>'required'
+            'otp'=>'required',
+            'token'=>'required'
         ]);
         $user = PhoneVerfy::where('phone', $request->input('phone'))->first();
         if($user->verfied = 0 ){
@@ -119,16 +121,24 @@ class VertificationController extends Controller
                'message' => 'failed to verfy'
             ],401);
         }
-
-
+        //visitor token
+        $visitor = Visitor::where('token' , $request->token)->first();
+    
         if($otp == $request->input('otp')) {
             //delete log
             $user->delete();
+            if(!$visitor){
+                return response([
+                    'Message'=> 'Visitor Token Missing !'
+                ],401);
+            }
 
 
 
             if($user = User::where('phone', $request->input('phone'))->first()){
                 $token = JWTAuth::fromUser($user);
+                $visitor->user_id = $user->id;
+                $visitor->save();
                 return response([
                     'Message'=>"Success",
                     'token'=>$token,
@@ -154,7 +164,7 @@ class VertificationController extends Controller
 
 //            }
                 $foo = new UserController();
-                return $foo->register($request);
+                return $foo->register($request ,$visitor);
 
 //
             }

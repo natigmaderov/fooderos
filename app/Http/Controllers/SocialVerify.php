@@ -28,7 +28,7 @@ class SocialVerify extends Controller
                 return response([
                     'Message'=>"verified user!!!",
                     'status'=>'1',
-		    'toke'=>$token
+		    'token'=>$token
                 ],201);
             }
 
@@ -53,7 +53,5 @@ class SocialVerify extends Controller
     }
 
 
-    public  function createUser(Request  $request){
-
-    }
+   
 }

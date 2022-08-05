@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function register(Request $request){
+    public function register(Request $request ,$visitor){
 
 
 
@@ -36,6 +36,8 @@ class UserController extends Controller
                 'role_id'=>1,
                 'status'=>0
             ]);
+            $visitor->token = $user->id;
+            $visitor->save();
               if( $social = SocialUsers::where('email',$request->email)->first()){
                $social->phone = $request->phone;
                $social->user_id = $user->id;
@@ -60,7 +62,7 @@ class UserController extends Controller
 
 
 
-    }
+    }//
 
     public function get_user()
     {
