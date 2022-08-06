@@ -5,16 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserDetails extends Model
+class TagTypes extends Model
 {
     use HasFactory;
-    protected $fillable = [
+    protected $fillabele = [
         'name',
-        'user_id',
-        'birthday',
-        'gender',
-        'email',
-        'phone',
-        'photo'
+        'status',
     ];
 }

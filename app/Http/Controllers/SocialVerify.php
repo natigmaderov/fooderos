@@ -15,10 +15,10 @@ class SocialVerify extends Controller
             'email'=>'required',
             'social_providers'=>'required'
         ]);
-        $SocialUser = SocialUsers::where('email',$request->email)->first();
-        if($SocialUser and $SocialUser->social_providers == $request->social_providers){
+        
+        if($social = SocialUsers::where('email',$request->email)->where('social_providers', $request->social_providers)->first()){
 
-            if($user = User::where('phone' , $SocialUser->phone)->first()){
+            if($user = User::where('phone' , $social->phone)->first()){
 
 
 		  $token = JWTAuth::fromUser($user);

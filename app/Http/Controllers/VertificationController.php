@@ -141,7 +141,7 @@ class VertificationController extends Controller
                 $visitor->user_id = $user->id;
                 $visitor->save();
                 
-                if($social = SocialUsers::where('email',$request->email)->first() and $social->social_provider = $request->social_provider){
+                if($social = SocialUsers::where('email',$request->email)->where('social_providers', $request->social_providers)->first()){
                     $social->phone = $request->phone;
                     $social->user_id = $user->id;
                     $social->save();

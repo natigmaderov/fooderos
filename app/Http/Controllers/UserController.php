@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Appkeys;
 use App\Models\PhoneVerfy;
-
-
 use App\Models\SocialUsers;
 use App\Models\User;
+use App\Http\Controllers\UserDetailsController;
 use http\Env\Response;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -51,13 +50,16 @@ class UserController extends Controller
                 'status'=>0
             ]);
 
+            $userDetails = new UserDetailsController();
+            $userDetails->create($request , $user);
+
 
             $visitor->token = $user->id;
             $visitor->save();
 
 
 
-              if( $social = SocialUsers::where('email',$request->email)->first() and $social->social_providers = $request->social_providers){
+              if( $social = SocialUsers::where('email',$request->email)->where('social_providers', $request->social_providers)->first() ){
                $social->phone = $request->phone;
                $social->user_id = $user->id;
                $social->save();
@@ -69,7 +71,8 @@ class UserController extends Controller
                 return response([
                     'token'=>$token,
                     'token_type'=>'bearer',
-                    'expires_in'=>auth()->factory()->getTTL()*60
+                    'expires_in'=>auth()->factory()->getTTL()*60,
+                    'UserDetails'=>$userDetails
                 ]);
 
             }
