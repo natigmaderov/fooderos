@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\UserController;
+use App\Models\Appkeys;
 use App\Models\SocialUsers;
 use App\Models\Visitor;
 use Illuminate\Support\Facades\Http;
@@ -26,7 +27,19 @@ class VertificationController extends Controller
             'reKey'=> 'required'
         ]);
 
-
+        $appKey = $request->header('applicationkey');
+        $isAdmin = 2;
+        $appkey = (Appkeys::where('app_key',$appKey)->first());
+        
+        if(!$appKey){
+            return response([
+                'Message' => 'Invalid App key'
+            ]);
+         }
+       
+         if($appkey->name == 'admin'){
+            $isAdmin = 1;
+        }
 
 
         $secretkey = '6LexJUchAAAAAGbzQpJkXlvN310-ZR2AYZRPmAlf';
@@ -44,6 +57,11 @@ class VertificationController extends Controller
         $status = 0;
         if($user = User::where('phone', $request->input('phone'))->first()){
             $status = 1;
+            if(!$user->role_id == $isAdmin){
+                return response([
+                    'message'=>'you are not admin !'
+                ],401);   
+            }
         }
         if ($check = PhoneVerfy::where('phone', $request->input('phone'))->first()) {
             //24 hours block checking

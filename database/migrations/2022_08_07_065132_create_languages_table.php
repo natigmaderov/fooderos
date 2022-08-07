@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tag_locales', function (Blueprint $table) {
+        Schema::create('languages', function (Blueprint $table) {
             $table->id();
-            $table->integer('tag_id');
-            $table->string('name');
-            $table->string('description');
             $table->string('lang');
+            $table->integer('status');
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tag_locales');
+        Schema::dropIfExists('languages');
     }
 };

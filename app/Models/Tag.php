@@ -12,5 +12,7 @@ class Tag extends Model
         'Name',
         'Status',
         'Type_id',
+        'store_count',
+        'image'
     ];
 }

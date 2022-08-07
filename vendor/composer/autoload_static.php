@@ -568,6 +568,7 @@ class ComposerStaticInit14df9ef0d6d83952790773fa025e12cd
         'App\\Http\\Middleware\\TrustProxies' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustProxies.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
         'App\\Models\\Appkeys' => __DIR__ . '/../..' . '/app/Models/Appkeys.php',
+        'App\\Models\\Language' => __DIR__ . '/../..' . '/app/Models/Language.php',
         'App\\Models\\PhoneVerfy' => __DIR__ . '/../..' . '/app/Models/PhoneVerfy.php',
         'App\\Models\\Roles' => __DIR__ . '/../..' . '/app/Models/Roles.php',
         'App\\Models\\SocialUsers' => __DIR__ . '/../..' . '/app/Models/SocialUsers.php',

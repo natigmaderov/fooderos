@@ -29,10 +29,20 @@ class UserDetailsController extends Controller
     
     public function details(){
 
-        $user = \auth()->user();
+        if($user = \auth()->user()){
         
-        return UserDetails::where('user_id' , $user->id)->first();
+        $data = UserDetails::where('user_id' , $user->id)->first();
         
+        if(!$data){
+            return response([
+                'message'=>'invalid user'
+            ],401);
+        }
+        return $data;
+    }
+    return response([
+        'message'=> "ala invalid tokende"
+    ],401);
 
     }
 
