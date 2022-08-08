@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use PDO;
 
 class TagTypes extends Model
 {
@@ -12,4 +13,10 @@ class TagTypes extends Model
         'name',
         'status',
     ];
+
+    public function tag(){
+
+
+        return $this->hasMany(Tag::class , 'type_id' , 'id');
+    }
 }

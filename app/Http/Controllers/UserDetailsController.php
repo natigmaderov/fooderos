@@ -41,7 +41,7 @@ class UserDetailsController extends Controller
         return $data;
     }
     return response([
-        'message'=> "ala invalid tokende"
+        'message'=> "invalid token"
     ],401);
 
     }

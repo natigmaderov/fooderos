@@ -35,6 +35,7 @@ Route::group(['middleware'=>'api'] , function ($routes){
         Route::get('/list' , [TagController::class , 'show']);
         Route::post('/type',[TagController::class , 'store']);
         Route::get('/type',[TagController::class , 'showTypes']);
+        Route::put('/status' ,[TagController::class , 'status']);
 
     });
 
@@ -42,9 +43,10 @@ Route::group(['middleware'=>'api'] , function ($routes){
       
         Route::post('/',[LangugeController::class , 'store']);
         Route::delete('/',[LangugeController::class , 'delete']);
-        Route::get('/' , [TagController::class ,'show']);
+        Route::get('/' , [LangugeController::class ,'show']);
     });
     
 });
 
-Route::get('/lang' , [LangugeController::class , 'languageVariable']);
+Route::post('/lang' , [LangugeController::class , 'store']);
+

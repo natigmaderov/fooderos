@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TagCollection;
 use App\Models\Tag;
 use App\Models\TagTypes;
 use Illuminate\Support\Facades\DB;
@@ -11,13 +12,16 @@ class TagController extends Controller
 {
     public function show(Request $request){
        
-        $start = $_GET['start'];
-        $page = $_GET['page'];
+        // $start = $_GET['start'];
+        // $page = $_GET['page'];
         
         
+        // return DB::table('tags')->skip($start)->take($page*10)->get();
         
-
-        return DB::table('tags')->skip($start)->take($page*10)->get();
+        $tags= TagCollection::collection(Tag::with('tagtypes')->get());
+        return response()->json([
+            "Tags"=>$tags
+        ],200);
     }
 
 
@@ -27,9 +31,41 @@ class TagController extends Controller
         $request ->validate([
             'name'=>'required',
         ]);
+        $type_id = TagTypes::where('name',$request->tag_name)->first()->id;
+
+  
+            $tag = Tag::create([
+            'name'=>$request->name,
+            'type_id'=>$type_id,
+            'status'=>1,
+            'store_count'=>1,
+            'image' => '',
+        ]);
+
+        if($request->hasFile('image')){
+            $dest_path = 'public/tags/images';
+            $image = $request->file('image');
+            $image_name = $image->getClientOriginalName();
+            $path = $request->file('image')->storeAs($dest_path,$tag->name);
+        }
+        $tag->image = $tag->name;
+        $tag->save();
     }
     
-    
+    public function status(Request $request){
+        $request -> validate([
+            'id'=>$request->id,
+            'status'=>$request->status
+        ]);
+
+        $tag = Tag::where('id', $request->id)->first();
+        $tag->status = $request->status;
+        $tag->save();
+
+        return response([
+            'Message'=>'status changed'
+        ],201);
+    }
     
     
     

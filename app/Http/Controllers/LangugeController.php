@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Language;
 use App\Models\Tag;
 use App\Models\TagLocales;
+use App\Models\TagTypes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\DB;
@@ -21,16 +22,32 @@ class LangugeController extends Controller
         $request->validate([
             'name'=>'required'
         ]);
-        if(Language::where('name' , $request->name)->first()){
+        
+        if($l=Language::where('lang' , $request->name)->first()){
             return response([
                 'message' =>'language is already exist'
             ],403);
 
         }
-             Language::create([
-            'name'=>$request->name,
+             $lang =Language::create([
+            'lang'=>$request->name,
             'status'=>1
         ]);
+
+        $tag_locals = Tag::all();
+
+        foreach ($tag_locals as $key => $value) {
+            $tag_lang = TagLocales::create([
+                'name'=>'',
+                'tag_id'=>$tag_locals[$key]['id'],
+                'description'=>'',
+                'lang' => $request->name,
+            ]
+            );
+            
+        }
+
+
 
         return response([
             'message'=>'Language Added !'
@@ -52,21 +69,5 @@ class LangugeController extends Controller
     }
 
 
-    public function languageVariable(Request $request){
-        
-        $languages = Language::all();
-        //$languages[$key]['lang'];
-        foreach ($languages as $key => $value) {
-               
-            $tagLocals = TagLocales::create([
-                    'name' => $request->name,
-                    'tag_id'=>Tag::where('name',$request->tag_name)->first()->id,
-                    'description'=>$request->$languages[$key]['lang'].'_description',
-                    'lang'=>$languages[$key]['lang']
-                    
-               ]); 
-        } 
-
-
-     }
+    
 }

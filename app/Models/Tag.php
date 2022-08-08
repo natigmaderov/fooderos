@@ -15,4 +15,8 @@ class Tag extends Model
         'store_count',
         'image'
     ];
+
+    public function tagtypes(){
+        return $this->belongsTo(TagTypes::class ,'type_id' , 'id');
+    }
 }

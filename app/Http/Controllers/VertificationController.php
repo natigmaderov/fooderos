@@ -30,14 +30,14 @@ class VertificationController extends Controller
         $appKey = $request->header('applicationkey');
         $isAdmin = 2;
         $appkey = (Appkeys::where('app_key',$appKey)->first());
-        
+
         if(!$appKey){
             return response([
                 'Message' => 'Invalid App key'
             ]);
          }
        
-         if($appkey->name == 'admin'){
+         if($appkey->name == "admin"){
             $isAdmin = 1;
         }
 
@@ -53,11 +53,12 @@ class VertificationController extends Controller
             $recaptcha = true;
         }
 
-
         $status = 0;
         if($user = User::where('phone', $request->input('phone'))->first()){
+            
             $status = 1;
-            if(!$user->role_id == $isAdmin){
+          
+            if($user->role_id != $isAdmin){
                 return response([
                     'message'=>'you are not admin !'
                 ],401);   
