@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\TagCollection;
 use App\Models\Tag;
+use App\Models\TagLocales;
 use App\Models\TagTypes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class TagController extends Controller
 {
@@ -33,7 +35,11 @@ class TagController extends Controller
         ]);
         $type_id = TagTypes::where('name',$request->tag_name)->first()->id;
 
-  
+        if(Tag::where('name',$request->name)->first()){
+            return response([
+                'message'=>'Tag Already Exist!!!'
+            ],401);
+        }
             $tag = Tag::create([
             'name'=>$request->name,
             'type_id'=>$type_id,
@@ -46,16 +52,65 @@ class TagController extends Controller
             $dest_path = 'public/tags/images';
             $image = $request->file('image');
             $image_name = $image->getClientOriginalName();
-            $path = $request->file('image')->storeAs($dest_path,$tag->name);
+            $path = $request->file('image')->storeAs($dest_path,$tag->id.$tag->name);
         }
-        $tag->image = $tag->name;
+        $tag->image = $tag->id.$tag->name;
         $tag->save();
+
+        $Locals = new TagLocalsController();
+        return $Locals->store($request , $tag);
     }
-    
+
+
+    public function edit(Request $request){
+
+        $request->validate([
+            'id' => 'required'
+        ]);
+
+        $tag = Tag::find($request->id);
+        
+        $dest_path = 'storage/tags/images/'.$tag->image;
+        
+        if(File::exists($dest_path)) {
+            File::delete($dest_path);
+        }
+
+        $tag->name = $request->name;
+        if($request->hasFile('image')){
+            $dest_path = 'public/tags/images';
+            $image = $request->file('image');
+            $image_name = $image->getClientOriginalName();
+            $path = $request->file('image')->storeAs($dest_path,$tag->id.$tag->name);
+        }
+        $tag->image = $tag->id.$tag->name;
+ 
+        $tag->save();
+
+        $Locals = new TagLocalsController();
+        return $Locals->edit($request , $tag);
+
+    }
+  
+    public function delete(Request $request){
+        
+        $request->validate([
+            'id'=>'required'
+        ]);
+        $id = $request->id;
+        $tag = Tag::find($id)->delete();
+        $tag_locales = TagLocales::where('tag_id',$id)->delete();
+
+        return response([
+            'message'=>'Record deleted !!!'
+        ],201);
+
+    }
+
     public function status(Request $request){
-        $request -> validate([
-            'id'=>$request->id,
-            'status'=>$request->status
+        $request->validate([
+            'id'=>'required',
+            'status'=>'required',
         ]);
 
         $tag = Tag::where('id', $request->id)->first();
@@ -68,7 +123,16 @@ class TagController extends Controller
     }
     
     
-    
+    public function showID(Request $request){
+
+        $request->validate([
+            'id'=>'required'
+        ]);
+        $tag = Tag::with('tag_locals')->where('id',$request->id)->get();
+        
+        return $tag;
+
+    }
     
     
     

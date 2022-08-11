@@ -28,7 +28,7 @@ class VertificationController extends Controller
         ]);
 
         $appKey = $request->header('applicationkey');
-        $isAdmin = 2;
+        $isAdmin = "2";
         $appkey = (Appkeys::where('app_key',$appKey)->first());
 
         if(!$appKey){
@@ -37,9 +37,7 @@ class VertificationController extends Controller
             ]);
          }
        
-         if($appkey->name == "admin"){
-            $isAdmin = 1;
-        }
+       
 
 
         $secretkey = '6LexJUchAAAAAGbzQpJkXlvN310-ZR2AYZRPmAlf';
@@ -48,22 +46,23 @@ class VertificationController extends Controller
         $response = \file_get_contents($url);
         $response = json_decode($response);
 
-
         if($response->success){
             $recaptcha = true;
         }
-
         $status = 0;
         if($user = User::where('phone', $request->input('phone'))->first()){
             
             $status = 1;
           
+            if($appkey->name == "admin"){
+                $isAdmin = "1";
             if($user->role_id != $isAdmin){
                 return response([
                     'message'=>'you are not admin !'
                 ],401);   
             }
         }
+    }
         if ($check = PhoneVerfy::where('phone', $request->input('phone'))->first()) {
             //24 hours block checking
             $time =strtotime( $check->updated_at);
@@ -211,3 +210,4 @@ class VertificationController extends Controller
 
     }
 }
+    

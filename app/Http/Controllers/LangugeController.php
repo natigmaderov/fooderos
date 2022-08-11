@@ -38,7 +38,7 @@ class LangugeController extends Controller
 
         foreach ($tag_locals as $key => $value) {
             $tag_lang = TagLocales::create([
-                'name'=>'',
+                'name'=>$tag_locals[$key]['name'],
                 'tag_id'=>$tag_locals[$key]['id'],
                 'description'=>'',
                 'lang' => $request->name,
