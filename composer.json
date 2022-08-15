@@ -11,6 +11,7 @@
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
+        "laravolt/avatar": "~0.3",
         "smsfactor/smsfactor-laravel": "^1.1",
         "tymon/jwt-auth": "^1.0"
     },

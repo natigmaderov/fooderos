@@ -9,6 +9,7 @@ use App\Models\TagTypes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\DB;
+use Mockery\Matcher\Type;
 
 class LangugeController extends Controller
 {
@@ -61,7 +62,8 @@ class LangugeController extends Controller
             'name'=>'required'
         ]);
 
-        Language::where('name' , $request->name)->delete();
+        Language::where('lang' , $request->name)->delete();
+        TagLocales::where('lang',$request->name)->delete();
 
         return response([
             'message' => 'Language deleted'

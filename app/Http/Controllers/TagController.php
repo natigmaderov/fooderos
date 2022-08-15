@@ -65,25 +65,33 @@ class TagController extends Controller
     public function edit(Request $request){
 
         $request->validate([
-            'id' => 'required'
+            'id' => 'required',
+            'name'=>'required'
         ]);
 
         $tag = Tag::find($request->id);
         
-        $dest_path = 'storage/tags/images/'.$tag->image;
-        
-        if(File::exists($dest_path)) {
-            File::delete($dest_path);
-        }
 
+        $type_id = TagTypes::where('name' ,$request->tag_name)->first()->id;  
+        
+        $image = $request->hasFile('image');
+       
         $tag->name = $request->name;
-        if($request->hasFile('image')){
+        if($image){
+            
+            $dest_path1 = 'storage/tags/images/'.$tag->image;
+            if(File::exists($dest_path1)) {
+                File::delete($dest_path1);
+            }
+
             $dest_path = 'public/tags/images';
             $image = $request->file('image');
             $image_name = $image->getClientOriginalName();
             $path = $request->file('image')->storeAs($dest_path,$tag->id.$tag->name);
+            $tag->image = $tag->id.$tag->name;
+            
         }
-        $tag->image = $tag->id.$tag->name;
+        $tag->type_id = $type_id;
  
         $tag->save();
 
@@ -123,12 +131,12 @@ class TagController extends Controller
     }
     
     
-    public function showID(Request $request){
+    public function showID($id){
 
-        $request->validate([
-            'id'=>'required'
-        ]);
-        $tag = Tag::with('tag_locals')->where('id',$request->id)->get();
+        // $request->validate([
+        //     'id'=>'required'
+        // ]);
+        $tag = Tag::with('tag_locals')->where('id',$id)->get();
         
         return $tag;
 
@@ -160,7 +168,7 @@ class TagController extends Controller
 
         $tag = TagTypes::create([
             'name'=>$request->name,
-            'status'=>1
+            'status'=>1,
         ]);
         return response([
             'message'=>'Tag created Successfully'
@@ -170,6 +178,23 @@ class TagController extends Controller
     public function showTypes(){
 
         return TagTypes::all();
+
+    }
+
+    public function TypeStatus(Request $request){
+
+        $request->validate([
+            'id'=>'required',
+            'status'=>'required',
+        ]);
+
+        $tag = TagTypes::where('id', $request->id)->first();
+        $tag->status = $request->status;
+        $tag->save();
+
+        return response([
+            'Message'=>'status changed'
+        ],201);
 
     }
     

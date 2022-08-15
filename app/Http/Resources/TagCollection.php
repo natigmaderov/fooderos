@@ -21,6 +21,7 @@ class TagCollection extends JsonResource
             'name'=>$this->name,
             'store_count'=>$this->store_count,
             'status'=>$this->status,
+            'image'=>$this->image,
             'tag_name'=>$this->tagtypes->name
             
         ];

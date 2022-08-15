@@ -49,6 +49,7 @@ class UserController extends Controller
                 'role_id'=>$isAdmin,
                 'status'=>0
             ]);
+            
 
             $userDetails = new UserDetailsController();
             $userDetails->create($request , $user);

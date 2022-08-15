@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use Tymon\JWTAuth\Facades\JWTAuth;
+// use Intervention\Image\Facades\Image;
 
 class UserDetailsController extends Controller
 {
     
     public function create(Request $request , $user){
 
+        
         $User_Data = UserDetails::create([
             'name' => $user->name,
             'user_id'=>$user->id,

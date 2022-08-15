@@ -10,10 +10,10 @@ use PDO;
 class TagTypes extends Model
 {
     use HasFactory;
-    protected $fillabele = [
-        'name',
-        'status',
-    ];
+   protected $fillable =[
+    'name',
+    'status',
+   ];
 
     public function tag(){
 

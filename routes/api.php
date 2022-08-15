@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\LangugeController;
+use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserDetailsController;
 use App\Http\Controllers\VisitorController;
 use App\Models\UserDetails;
 use App\Models\Visitor;
+use Illuminate\Contracts\Cache\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -38,12 +40,13 @@ Route::group(['middleware'=>'api'] , function ($routes){
         Route::get('/list' , [TagController::class , 'show']);
         Route::post('/create',[TagController::class , 'create']);
         Route::put('/status' ,[TagController::class , 'status']);
-        Route::put('/edit',[TagController::class , 'edit']);
+        Route::post('/edit',[TagController::class , 'edit']);
         Route::delete('/delete',[TagController::class , 'delete']);
-        Route::get('/show',[TagController::class , 'showID']);
+        Route::get('/show/{id}',[TagController::class , 'showID']);
         //tag_types        
         Route::post('/type',[TagController::class , 'store']);
         Route::get('/type',[TagController::class , 'showTypes']);
+        Route::put('/typestatus' , [TagController::class , 'TypeStatus']);
 
        
     });
@@ -54,14 +57,23 @@ Route::group(['middleware'=>'api'] , function ($routes){
         Route::delete('/',[LangugeController::class , 'delete']);
         Route::get('/' , [LangugeController::class ,'show']);
     });
+
+    // Route::prefix('store')->group(function($routes){
+    //     Route::get('/',[StoreController::class , 'show']);
+    //     Route::post('/', [StoreController::class , 'store']);
+    //     Route::post('/edit' , [StoreController::class , 'edit']);
+    //     Route::delete('/',[StoreController::class , 'delete']);
+    // });
     
 });
 
-Route::post('/lang' , [LangugeController::class , 'store']);
 
-Route::post('/create',[TagController::class , 'create']);
-Route::post('/edit',[TagController::class , 'edit']);
+// //public test APIs
+// Route::post('/lang' , [LangugeController::class , 'store']);
 
+// Route::post('/create',[TagController::class , 'create']);
+// Route::post('/edit',[TagController::class , 'edit']);
+// Route::get('/show/{id}',[TagController::class , 'showID']);
 
-//for testing #Cavansir//
-Route::post('/cava' , [VisitorController::class , 'cava']);
+// //for testing #Cavansir//
+// Route::post('/cava' , [TagController::class , 'store']);
