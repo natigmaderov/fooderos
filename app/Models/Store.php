@@ -13,6 +13,10 @@ class Store extends Model
     use HasFactory;
 
     protected $fillable = [
-        
+        'name',
+        'manager_id',
+        'image',
+        'commision',
+        'price'
     ];
 }
