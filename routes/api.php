@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\LangugeController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserDetailsController;
@@ -64,6 +65,14 @@ Route::group(['middleware'=>'api'] , function ($routes){
     //     Route::post('/edit' , [StoreController::class , 'edit']);
     //     Route::delete('/',[StoreController::class , 'delete']);
     // });
+
+    Route::prefix('roles')->group(function($routes){
+        Route::get('/',[RoleController::class , 'show']);
+        Route::post('/',[RoleController::class , 'create']);
+        Route::post('/edit',[RoleController::class , 'edit']);
+        Route::delete('/',[RoleController::class , 'destroy']);
+
+    });
     
 });
 
