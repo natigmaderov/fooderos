@@ -15,7 +15,8 @@ class Tag extends Model
         'status',
         'type_id',
         'store_count',
-        'image'
+        'image',
+        'rest_id'
     ];
 
     public function tagtypes(){

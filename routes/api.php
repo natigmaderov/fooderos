@@ -38,7 +38,7 @@ Route::group(['middleware'=>'api'] , function ($routes){
 //for tags
     Route::prefix('tag')->group(function($routes){
         //tags
-        Route::get('/list' , [TagController::class , 'show']);
+        Route::get('/list/{lang}/{rest}' , [TagController::class , 'show']);
         Route::post('/create',[TagController::class , 'create']);
         Route::put('/status' ,[TagController::class , 'status']);
         Route::post('/edit',[TagController::class , 'edit']);
@@ -85,4 +85,5 @@ Route::group(['middleware'=>'api'] , function ($routes){
 // Route::get('/show/{id}',[TagController::class , 'showID']);
 
 // //for testing #Cavansir//
-// Route::post('/cava' , [TagController::class , 'store']);
+Route::get('/list/{lang}/{rest}' , [TagController::class , 'show']);
+// Route::post('/cava' , [TagController::class , 'store']); 

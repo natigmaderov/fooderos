@@ -18,7 +18,7 @@ class TagCollection extends JsonResource
     {
         return [
             'id'=>$this->id,
-            'name'=>$this->name,
+            'name'=>$this->tag_locals[0]->name,
             'store_count'=>$this->store_count,
             'status'=>$this->status,
             'image'=>$this->image,

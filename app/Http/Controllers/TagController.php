@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\TagCollection;
+use App\Models\Rest;
 use App\Models\Tag;
 use App\Models\TagLocales;
 use App\Models\TagTypes;
@@ -12,18 +13,37 @@ use Illuminate\Support\Facades\File;
 
 class TagController extends Controller
 {
-    public function show(Request $request){
+    public function show($lang ,$rest){
        
         // $start = $_GET['start'];
         // $page = $_GET['page'];
         
         
         // return DB::table('tags')->skip($start)->take($page*10)->get();
+        // $tag = Tag::select(['id','status','image','type_id' ,'store_count'])->with(['tag_locals'=>function($query){$query->where('lang','Az');}])->get();
         
-        $tags= TagCollection::collection(Tag::with('tagtypes')->get());
-        return response()->json([
-            "Tags"=>$tags
-        ],200);
+
+        $data = DB::table("tags")
+        ->leftJoin("tag_locales", function($join){
+            $join->on("tags.id", "=", "tag_locales.tag_id");
+        })
+        ->leftJoin("tag_types", function($join){
+            $join->on("tags.type_id", "=", "tag_types.id");
+        })
+        ->leftJoin("rests",function($join){
+            $join->on("tags.rest_id" , "=" , "rests.id");
+        })
+        ->select("tags.id", "tag_locales.name", "tags.store_count", "tags.image", "tag_types.name as type" , "tags.status")
+        ->where("tag_locales.lang", "=", $lang)
+        ->where("rests.name", "=", $rest)
+        ->get();
+
+        return $data;
+
+        // $tags= TagCollection::collection($tag);
+        // return response()->json([
+        //     "Tags"=>$tags
+        // ],200);
     }
 
 
@@ -34,6 +54,7 @@ class TagController extends Controller
             'name'=>'required',
         ]);
         $type_id = TagTypes::where('name',$request->tag_name)->first()->id;
+        $rest_id = Rest::where('name' , $request->rest)->first()->id;
 
         if(Tag::where('name',$request->name)->first()){
             return response([
@@ -46,6 +67,7 @@ class TagController extends Controller
             'status'=>1,
             'store_count'=>1,
             'image' => '',
+            'rest_id'=>$rest_id
         ]);
 
         if($request->hasFile('image')){
