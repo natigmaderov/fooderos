@@ -88,12 +88,13 @@ class TagController extends Controller
 
         $request->validate([
             'id' => 'required',
-            'name'=>'required'
+            'name'=>'required',
+            'rest'=>'required'
         ]);
 
         $tag = Tag::find($request->id);
         
-
+        $rest = Rest::where('name' ,$request->rest)->first(); 
         $type_id = TagTypes::where('name' ,$request->tag_name)->first()->id;  
         
         $image = $request->hasFile('image');
@@ -114,6 +115,7 @@ class TagController extends Controller
             
         }
         $tag->type_id = $type_id;
+        $tag->rest_id = $rest->id;
  
         $tag->save();
 
@@ -158,9 +160,14 @@ class TagController extends Controller
         // $request->validate([
         //     'id'=>'required'
         // ]);
-        $tag = Tag::with('tag_locals')->where('id',$id)->get();
-        
-        return $tag;
+        $tag = Tag::with('tag_locals')->where('id',$id)->first();
+        $tag_name = TagTypes::find($tag->type_id)->name;
+        return response([
+            'tags'=>[
+                'tag'=>$tag,
+                'type_name'=>$tag_name
+            ]
+            ],201);
 
     }
     
