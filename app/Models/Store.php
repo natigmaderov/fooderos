@@ -15,8 +15,15 @@ class Store extends Model
     protected $fillable = [
         'name',
         'manager_id',
-        'image',
-        'commision',
-        'price'
+        'image',    
+        'commission',
+        'price',
+        'store_type'
     ];
+
+
+    public function tags(){
+
+        return $this->hasMany(StoreTags::class);
+    }
 }

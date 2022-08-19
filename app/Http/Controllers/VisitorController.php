@@ -23,9 +23,5 @@ class VisitorController extends Controller
         }
 
 //For testing Cavansir
-        public function cava(Request $request){
-            $lang = Language::find($request->id)->first();
-
-            return $lang;
-        }
+      
 }

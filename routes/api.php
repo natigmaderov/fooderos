@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Route;
 
 
 
-
 Route::post('phone',[\App\Http\Controllers\VertificationController::class , 'check']);
 Route::post('phone/verfy', [\App\Http\Controllers\VertificationController::class , 'vertification']);
 //for autentiocation
@@ -58,21 +57,23 @@ Route::group(['middleware'=>'api'] , function ($routes){
         Route::delete('/',[LangugeController::class , 'delete']);
         Route::get('/' , [LangugeController::class ,'show']);
     });
-
-    // Route::prefix('store')->group(function($routes){
-    //     Route::get('/',[StoreController::class , 'show']);
-    //     Route::post('/', [StoreController::class , 'store']);
-    //     Route::post('/edit' , [StoreController::class , 'edit']);
-    //     Route::delete('/',[StoreController::class , 'delete']);
-    // });
-
-    Route::prefix('roles')->group(function($routes){
-        Route::get('/',[RoleController::class , 'show']);
-        Route::post('/',[RoleController::class , 'create']);
-        Route::post('/edit',[RoleController::class , 'edit']);
-        Route::delete('/',[RoleController::class , 'destroy']);
+    
+    Route::prefix('store')->group(function($routes){
+        Route::get('/{lang}/{type}',[StoreController::class , 'show']);
+        Route::post('/', [StoreController::class , 'store']);
+        Route::post('/edit' , [StoreController::class , 'edit']);
+        Route::delete('/',[StoreController::class , 'delete']);
+        Route::get('/manager',[StoreController::class , 'manager']);
 
     });
+
+    // Route::prefix('roles')->group(function($routes){
+    //     Route::get('/',[RoleController::class , 'show']);
+    //     Route::post('/',[RoleController::class , 'create']);
+    //     Route::post('/edit',[RoleController::class , 'edit']);
+    //     Route::delete('/',[RoleController::class , 'destroy']);
+
+    // });
     
 });
 
@@ -85,5 +86,7 @@ Route::group(['middleware'=>'api'] , function ($routes){
 // Route::get('/show/{id}',[TagController::class , 'showID']);
 
 // //for testing #Cavansir//
-Route::get('/list/{lang}/{rest}' , [TagController::class , 'show']);
+// Route::get('/list/{lang}/{rest}' , [TagController::class , 'show']);
 // Route::post('/cava' , [TagController::class , 'store']); 
+Route::post('/a', [StoreController::class , 'store']);
+Route::get('a/{lang}/{type}',[StoreController::class , 'show']);

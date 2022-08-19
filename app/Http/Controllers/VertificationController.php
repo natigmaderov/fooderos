@@ -40,7 +40,7 @@ class VertificationController extends Controller
        
 
 
-        $secretkey = '6LexJUchAAAAAGbzQpJkXlvN310-ZR2AYZRPmAlf';
+        $secretkey = '6LeL3ochAAAAAI95-8Cvn86C5s4WFAVN_J799mSa';
         $userIP = \Request::ip();
         $url = "https://www.google.com/recaptcha/api/siteverify?secret=$secretkey&response=$request->reKey&remoteip=$userIP";
         $response = \file_get_contents($url);

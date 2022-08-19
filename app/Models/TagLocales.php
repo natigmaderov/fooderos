@@ -23,4 +23,9 @@ class TagLocales extends Model
 
         return $this->belongsTo(Tag::class , 'tag_id' , 'id');
     }
+
+    public function store(){
+
+        return $this->belongsTo(StoreTags::class , 'tag_id' , 'tag_id');
+    }
 }

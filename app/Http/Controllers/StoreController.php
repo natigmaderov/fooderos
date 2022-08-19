@@ -2,9 +2,87 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Manager;
+use App\Models\Store;
+use App\Models\StoreLocals;
+use App\Models\StoreTags;
+use App\Models\StoreType;
+use App\Models\Tag;
 use Illuminate\Http\Request;
+
+use function PHPSTORM_META\map;
 
 class StoreController extends Controller
 {
-    //
+    public function show($lang ,$type){
+        $type_id = StoreType::where('name' ,$type)->first()->id;
+        $store = Store::where('store_type' , $type_id)->with(["tags.tag" => function ($query) use ($lang) {$query->where('lang' ,$lang );}])->get();
+        
+        
+
+        return response([
+            'Message'=>"Success",
+             $type => $store
+        ],201);
+    }
+
+    public function manager(){
+
+        return Manager::all();
+    }
+
+
+    public function store(Request $request){
+
+        $request->validate([
+            'name'=>'required',
+            'type'=>'required',
+            'manager'=>'required',
+            'commission'=>'required',
+            'price'=>'required',
+            'image'=>'required'
+        ]);
+
+
+        $myArray = explode(' ', $request->tags);
+        
+
+        $manager = Manager::where('name' , $request->manager)->first()->id;
+        $type = StoreType::where('name' , $request->type)->first()->id;
+        $store = Store::create([
+            'name'=>$request->name,
+            'manager_id' =>$manager,
+            'store_type'=>$type,
+            'price'=>$request->price,
+            'commission'=>$request->commission,
+            'image'=>'default',
+
+        ]);
+
+
+        if($request->hasFile('image')){
+            $dest_path = 'public/stores/images';
+            $image = $request->file('image');
+            $image_name = $image->getClientOriginalName();
+            $path = $request->file('image')->storeAs($dest_path,$store->id.$store->name);
+            $store->image = $store->id.$store->name;
+        }
+
+       
+        foreach($myArray as $key => $value){
+            $store_tags = StoreTags::create([
+                'store_id' => $store->id,
+                'tag_id'=> Tag::where('name',$myArray[$key])->first()->id,
+                'status' => 1
+
+            ]);
+
+        }
+        
+        $store->save();
+
+        $Locals = new StoreLocalsController();
+        return $Locals->store($store ,$request);
+
+    }
 }
