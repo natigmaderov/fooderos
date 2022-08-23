@@ -170,7 +170,11 @@ class TagController extends Controller
             ],201);
 
     }
-    
+    public function showAll($rest){
+
+        $rest_id = Rest::where('name' ,$rest)->first()->id;
+        return Tag::with('tag_locals')->where('rest_id',$rest_id)->get();
+    }
     
     
     

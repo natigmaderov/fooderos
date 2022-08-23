@@ -38,6 +38,8 @@ Route::group(['middleware'=>'api'] , function ($routes){
     Route::prefix('tag')->group(function($routes){
         //tags
         Route::get('/list/{lang}/{rest}' , [TagController::class , 'show']);
+        Route::get('/list/{rest}' , [TagController::class , 'showAll']);
+
         Route::post('/create',[TagController::class , 'create']);
         Route::put('/status' ,[TagController::class , 'status']);
         Route::post('/edit',[TagController::class , 'edit']);
@@ -57,10 +59,13 @@ Route::group(['middleware'=>'api'] , function ($routes){
         Route::delete('/',[LangugeController::class , 'delete']);
         Route::get('/' , [LangugeController::class ,'show']);
     });
+
+    
     
     Route::prefix('store')->group(function($routes){
-        Route::get('/{lang}/{type}',[StoreController::class , 'show']);
+        Route::get('/list/{lang}/{type}',[StoreController::class , 'show']);
         Route::post('/', [StoreController::class , 'store']);
+        Route::get('/show/{id}',[StoreController::class , 'showID']);
         Route::post('/edit' , [StoreController::class , 'edit']);
         Route::delete('/',[StoreController::class , 'delete']);
         Route::get('/manager',[StoreController::class , 'manager']);
@@ -88,5 +93,7 @@ Route::group(['middleware'=>'api'] , function ($routes){
 // //for testing #Cavansir//
 // Route::get('/list/{lang}/{rest}' , [TagController::class , 'show']);
 // Route::post('/cava' , [TagController::class , 'store']); 
-Route::post('/a', [StoreController::class , 'store']);
-Route::get('a/{lang}/{type}',[StoreController::class , 'show']);
+// Route::post('/a', [StoreController::class , 'store']);
+// Route::get('a/{lang}/{type}',[StoreController::class , 'show']);
+Route::get('/list' , [TagController::class , 'showAll']);
+Route::get('/show/{id}',[StoreController::class , 'showID']);

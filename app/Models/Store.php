@@ -18,7 +18,8 @@ class Store extends Model
         'image',    
         'commission',
         'price',
-        'store_type'
+        'store_type',
+        'status'
     ];
 
 

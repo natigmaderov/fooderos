@@ -28,4 +28,26 @@ class StoreLocalsController extends Controller
         ],201);
     }
 
+
+    public function edit($store , $request){
+        $languages = Language::all();
+        $store_id = $store->id;
+            // dd($request);   
+        foreach ($languages as $key => $value) {
+               
+            $tagLocals = StoreLocals::where('store_di' , $store_id)->where('lang',$languages[$key]['lang'])->update([
+                    'name' => $request->input($languages[$key]['lang'].'_name'),
+                    'lang'=>$languages[$key]['lang']
+               ]);
+            
+            
+        } 
+
+        return response([
+            'message'=>'Store updated !!!'
+        ],201);
+    }
+
+    
+
 }
