@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\TagCollection;
 use App\Models\Rest;
+use App\Models\StoreTags;
 use App\Models\Tag;
 use App\Models\TagLocales;
 use App\Models\TagTypes;
@@ -21,7 +22,11 @@ class TagController extends Controller
         
         // return DB::table('tags')->skip($start)->take($page*10)->get();
         // $tag = Tag::select(['id','status','image','type_id' ,'store_count'])->with(['tag_locals'=>function($query){$query->where('lang','Az');}])->get();
-        
+        $tagCount = Tag::all();
+        foreach ($tagCount as $key => $value){
+                $tagCount[$key]->store_count = count(StoreTags::where('tag_id' ,$tagCount[$key]->id)->get());
+                $tagCount[$key]->save();
+        }
 
         $data = DB::table("tags")
         ->leftJoin("tag_locales", function($join){

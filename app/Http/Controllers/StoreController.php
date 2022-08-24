@@ -75,12 +75,15 @@ class StoreController extends Controller
 
        
         foreach($myArray as $key => $value){
+            $tag = Tag::where('name',$myArray[$key])->first();
             $store_tags = StoreTags::create([
                 'store_id' => $store->id,
-                'tag_id'=> Tag::where('name',$myArray[$key])->first()->id,
+                'tag_id'=> $tag->id,
                 'status' => 1
 
             ]);
+            // $tag->store_count +=1;
+            // $tag->save();
 
         }
         
