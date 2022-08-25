@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ShowCollection;
 use App\Http\Resources\StoreCollection;
+use App\Models\Branch;
 use App\Models\Manager;
 use App\Models\Rest;
 use App\Models\Store;
@@ -20,13 +21,22 @@ class StoreController extends Controller
 {
     public function show($lang ,$type){
         $type_id = Rest::where('name' ,$type)->first()->id;
-        $store = StoreCollection::collection(Store::where('store_type' , $type_id)->with(["tags.tag" => function ($query) use ($lang) {$query->where('lang' ,$lang );}])->get());
+        $store = StoreCollection::collection(Store::where('store_type' , $type_id)->with(["tags.tag" => function ($query) use ($lang) {
+            $query->where('lang' ,$lang )->select('tag_id','name','lang');}])->with(["store_locals" =>function($query) use ($lang) {
+                $query->where('lang' ,$lang)->select('store_id','store_locals.name','lang');
+            }])->get());
         
+        
+        
+        //     $storelocals =Store::where('store_type' , $type_id)->with(["store_locals" =>function($query){
+        //     $query->select('store_id','store_locals.name','lang');
+        // }])->select('id')->get();
         
 
         return response([
             'Message'=>"Success",
-             $type => $store
+             $type => $store,
+            //  'storeLocals'=>$storelocals
         ],201);
     }
 
@@ -166,12 +176,37 @@ class StoreController extends Controller
         Store::find($request->id)->delete();
         StoreLocals::where('store_id',$request->id)->delete();
         StoreTags::where('store_id',$request->id)->delete();
+       
+        $branch = new BranchController();
+        return $branch->destroy($request->id);
 
         return response([
             'message'=>'store deleted'
         ],201);
 
-    }   
+    }  
 
+    public function status(Request $request){
+        $request->validate([
+            'id'=>'required',
+            'status'=>'required',
+        ]);
+
+        $store = Store::where('id', $request->id)->first();
+        $store->status = $request->status;
+        $store->save();
+        
+        $branch = Branch::where('store_id' , $store->id)->get();
+        foreach ($branch as $key =>$value){
+
+            $branch[$key]->status = $request->status;
+            $branch[$key]->save();
+        }
+
+        return response([
+            'Message'=>'status changed'
+        ],201);
+    }
+    
     
 }

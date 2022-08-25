@@ -27,4 +27,8 @@ class Store extends Model
 
         return $this->hasMany(StoreTags::class);
     }
+
+    public function store_locals(){
+        return $this->hasMany(StoreLocals::class);
+    }
 }

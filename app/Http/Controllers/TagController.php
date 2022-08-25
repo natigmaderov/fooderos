@@ -41,6 +41,7 @@ class TagController extends Controller
         ->select("tags.id", "tag_locales.name", "tags.store_count", "tags.image", "tag_types.name as type" , "tags.status")
         ->where("tag_locales.lang", "=", $lang)
         ->where("rests.name", "=", $rest)
+        ->whereNull("tags.deleted_at")
         ->get();
 
         return $data;
@@ -136,6 +137,7 @@ class TagController extends Controller
         ]);
         $id = $request->id;
         $tag = Tag::find($id)->delete();
+        StoreTags::where('tag_id',$id)->delete();
         $tag_locales = TagLocales::where('tag_id',$id)->delete();
 
         return response([
@@ -149,8 +151,17 @@ class TagController extends Controller
             'id'=>'required',
             'status'=>'required',
         ]);
-
+        
         $tag = Tag::where('id', $request->id)->first();
+        $type = TagTypes::where('id',$tag->type_id)->first();
+        if($type->status == 0){
+
+            return response([
+                "Message" => "You need to activate type: ".$type->name,
+
+            ],400);
+        }
+
         $tag->status = $request->status;
         $tag->save();
 
@@ -228,6 +239,14 @@ class TagController extends Controller
 
         $tag = TagTypes::where('id', $request->id)->first();
         $tag->status = $request->status;
+
+        $tags = Tag::where("type_id" ,$tag->id)->get();
+
+        foreach ($tags as $key =>$value){
+
+            $tags[$key]->status = $request->status;
+            $tags[$key]->save();
+        }
         $tag->save();
 
         return response([

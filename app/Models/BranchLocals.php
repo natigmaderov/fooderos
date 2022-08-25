@@ -4,20 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class StoreLocals extends Model
+class BranchLocals extends Model
 {
+    use SoftDeletes;
     use HasFactory;
 
     protected $fillable = [
         'name',
-        'status',
+        'address',
         'lang',
-        'store_id'
+        'status',
+        'branch_id'
     ];
-
-    public function store(){
-
-        return $this->belongsTo(Store::class);
-    }
 }

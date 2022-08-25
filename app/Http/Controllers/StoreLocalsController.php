@@ -35,7 +35,7 @@ class StoreLocalsController extends Controller
             // dd($request);   
         foreach ($languages as $key => $value) {
                
-            $tagLocals = StoreLocals::where('store_di' , $store_id)->where('lang',$languages[$key]['lang'])->update([
+            $tagLocals = StoreLocals::where('store_id' , $store_id)->where('lang',$languages[$key]['lang'])->update([
                     'name' => $request->input($languages[$key]['lang'].'_name'),
                     'lang'=>$languages[$key]['lang']
                ]);

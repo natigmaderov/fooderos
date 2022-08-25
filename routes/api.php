@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\LangugeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\CountryController;
 use App\Http\Controllers\UserDetailsController;
 use App\Http\Controllers\VisitorController;
 use App\Models\UserDetails;
@@ -67,10 +69,25 @@ Route::group(['middleware'=>'api'] , function ($routes){
         Route::post('/', [StoreController::class , 'store']);
         Route::get('/show/{id}',[StoreController::class , 'showID']);
         Route::post('/edit' , [StoreController::class , 'edit']);
+        Route::post('/status',[StoreController::class,'status']);
         Route::delete('/',[StoreController::class , 'delete']);
         Route::get('/manager',[StoreController::class , 'manager']);
 
     });
+
+
+    Route::prefix('branch')->group(function($routes){
+        Route::get('/stores' , [BranchController::class , 'stores']);
+        Route::get('/list/{id}',[BranchController::class , 'show']);
+        Route::post('/',[BranchController::class , 'store']);
+        Route::get('/show/{id}',[BranchController::class , 'showID']);
+        Route::post('/edit',[BranchController::class , 'edit']);
+        Route::post('/status',[BranchController::class , 'status']);
+        Route::delete('/' , [BranchController::class , 'delete']);
+        
+    });
+
+    
 
     // Route::prefix('roles')->group(function($routes){
     //     Route::get('/',[RoleController::class , 'show']);
@@ -81,7 +98,8 @@ Route::group(['middleware'=>'api'] , function ($routes){
     // });
     
 });
-
+Route::get('country',[CountryController::class ,'show']);
+Route::get('city/{name}' , [CountryController::class , 'cities']);
 
 // //public test APIs
 // Route::post('/lang' , [LangugeController::class , 'store']);

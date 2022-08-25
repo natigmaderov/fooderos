@@ -21,7 +21,8 @@ class StoreCollection extends JsonResource
             'name'=>$this->name,
             'image'=>$this->image,
             'status'=>$this->status,
-            'tags'=>$this->tags
+            'tags'=>$this->tags,
+            'store_locals'=>$this->store_locals
         ];
         
     }
