@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\BranchScheduleController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\LangugeController;
 use App\Http\Controllers\RoleController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\UserDetailsController;
+use App\Http\Controllers\UtulitiesController;
 use App\Http\Controllers\VisitorController;
 use App\Models\UserDetails;
 use App\Models\Visitor;
@@ -88,7 +90,15 @@ Route::group(['middleware'=>'api'] , function ($routes){
     });
 
     
+    Route::prefix('settings')->group(function($routes){
+        Route::get('/paymnetoptions' , [UtulitiesController::class , 'paymentOptions']);
+        Route::post('/currecny' , [UtulitiesController::class , 'addCurrency']);
+        Route::post('/payment' ,[UtulitiesController::class , 'addOptions']);
+        Route::delete('/curreny' , [UtulitiesController::class , 'destroyCurenncy' ]);
+        Route::delete('/paymnet' , [UtulitiesController::class , 'destroyOptions' ]);
 
+
+    });
     // Route::prefix('roles')->group(function($routes){
     //     Route::get('/',[RoleController::class , 'show']);
     //     Route::post('/',[RoleController::class , 'create']);
@@ -115,3 +125,4 @@ Route::get('city/{name}' , [CountryController::class , 'cities']);
 // Route::get('a/{lang}/{type}',[StoreController::class , 'show']);
 Route::get('/list' , [TagController::class , 'showAll']);
 Route::get('/show/{id}',[StoreController::class , 'showID']);
+Route::post('sch' , [BranchScheduleController::class , 'store']);

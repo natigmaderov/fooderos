@@ -30,4 +30,9 @@ class Branch extends Model
         'status'
     ];
 
+    public function schedule(){
+
+        return $this->hasMany(BranchSchedule::class);
+    }
+
 }

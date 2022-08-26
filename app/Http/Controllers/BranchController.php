@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\BranchLocals;
+use App\Models\BranchSchedule;
+use App\Models\PaymentOptionsModel;
 use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -28,7 +30,8 @@ class BranchController extends Controller
     
     
     public function store (Request $request){
-
+       $payment = "";
+       $currency = "";
         $request->validate([
             'name'=>'required',
             'store_id'=>'required',
@@ -46,7 +49,18 @@ class BranchController extends Controller
             'amount'=>'required',
             'payload'=>'required',  
         ]);
+        $payArray = explode(',', $request->payment);
+        $currencyArray = explode(',',$request->currency);
+        foreach($payArray as $key=>$value){
+            $payment .=  $payArray[$key].",";
 
+        }
+        foreach($$currencyArray as $key=>$value){
+            $currency .=  $currencyArray[$key].",";
+
+        }
+        trim($payment, ',');
+        trim($currency, ',');
         $branch = Branch::create([
             'name'=>$request->name,
             'store_id'=>$request->store_id,
@@ -56,8 +70,8 @@ class BranchController extends Controller
             'lat'=>$request->lat,
             'long'=>$request->long,
             'phone'=>$request->phone,
-            'currency'=>$request->currency,
-            'payment'=>$request->payment,
+            'currency'=>$currency,
+            'payment'=>$payment,
             'cash_limit'=>$request->cash_limit,
             'amount'=>$request->amount,
             'payload'=>$request->payload,
@@ -82,6 +96,9 @@ class BranchController extends Controller
             $branch->cover = $branch->id.$branch->name;
         }
         $branch->save();
+
+        $schedule = new BranchSchedule();
+        $schedule->store($request , $branch);
 
         $Locals = new BranchLocalsController();
         return $Locals->store($request , $branch);
