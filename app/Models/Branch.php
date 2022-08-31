@@ -11,7 +11,8 @@ class Branch extends Model
     use SoftDeletes;
     use HasFactory;
 
-    protected $filllable = [
+    protected $fillable = [
+      
         'name',
         'store_id',
         'address',
@@ -22,17 +23,24 @@ class Branch extends Model
         'phone',
         'profile',
         'cover',
-        'currecny',
+        'currency',
         'payment',
         'cash_limit',
         'amount',
         'payload',
-        'status'
+        'status',
+        'name',
+        'max_distance'
+    
     ];
-
+    
     public function schedule(){
 
         return $this->hasMany(BranchSchedule::class);
+    }
+
+    public function locals(){
+        return $this->hasMany(BranchLocals::class);
     }
 
 }

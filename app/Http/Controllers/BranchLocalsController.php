@@ -28,7 +28,7 @@ class BranchLocalsController extends Controller
         } 
 
         return response([
-            'message'=>'Branch added !!!'
+            'message'=>'Branch Created !!!'
         ],201);
     }
 

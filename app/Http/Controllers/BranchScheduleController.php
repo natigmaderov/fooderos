@@ -30,4 +30,28 @@ class BranchScheduleController extends Controller
     }
 
     }
+
+
+    public function edit ($request , $branch){
+
+        $request->validate([
+            'schedule'=>'required'
+        ]);
+
+        $schedule = explode(',',$request->schedule);
+        $days = ['monday' ,'tuesday' , 'wednesday', 'thursday' , 'friday' , 'saturday', 'sunday'];
+        $c = 0;
+        for ($i=0; $i < count($schedule); $i+=3) { 
+        
+            $data =BranchSchedule::where('branch_id' , $branch->id)->where('name',$days[$c])->update([
+                'start'=>$schedule[$i],
+                'end'=>$schedule[$i+1],
+                'isClosed'=>$schedule[$i+2],
+                'status'=>1
+    
+            ]);
+            $c+=1;
+        }
+
+    }
 }

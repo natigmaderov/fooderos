@@ -43,6 +43,7 @@ Route::group(['middleware'=>'api'] , function ($routes){
         //tags
         Route::get('/list/{lang}/{rest}' , [TagController::class , 'show']);
         Route::get('/list/{rest}' , [TagController::class , 'showAll']);
+        Route::get('/client/list/{lang}/{rest}' , [TagController::class ,'clientShow']);
 
         Route::post('/create',[TagController::class , 'create']);
         Route::put('/status' ,[TagController::class , 'status']);
@@ -91,10 +92,10 @@ Route::group(['middleware'=>'api'] , function ($routes){
 
     
     Route::prefix('settings')->group(function($routes){
-        Route::get('/paymnetoptions' , [UtulitiesController::class , 'paymentOptions']);
-        Route::post('/currecny' , [UtulitiesController::class , 'addCurrency']);
-        Route::post('/payment' ,[UtulitiesController::class , 'addOptions']);
-        Route::delete('/curreny' , [UtulitiesController::class , 'destroyCurenncy' ]);
+        Route::get('/paymentoptions' , [UtulitiesController::class , 'paymentOptions']);
+        Route::post('/currency' , [UtulitiesController::class , 'addCurrency']);
+        Route::post('/payment' ,[UtulitiesController::class , 'addPayment']);
+        Route::delete('/currency' , [UtulitiesController::class , 'destroyCurrency' ]);
         Route::delete('/paymnet' , [UtulitiesController::class , 'destroyOptions' ]);
 
 
@@ -108,21 +109,10 @@ Route::group(['middleware'=>'api'] , function ($routes){
     // });
     
 });
+//public apis
 Route::get('country',[CountryController::class ,'show']);
 Route::get('city/{name}' , [CountryController::class , 'cities']);
 
-// //public test APIs
-// Route::post('/lang' , [LangugeController::class , 'store']);
 
-// Route::post('/create',[TagController::class , 'create']);
-// Route::post('/edit',[TagController::class , 'edit']);
-// Route::get('/show/{id}',[TagController::class , 'showID']);
-
-// //for testing #Cavansir//
-// Route::get('/list/{lang}/{rest}' , [TagController::class , 'show']);
-// Route::post('/cava' , [TagController::class , 'store']); 
-// Route::post('/a', [StoreController::class , 'store']);
-// Route::get('a/{lang}/{type}',[StoreController::class , 'show']);
-Route::get('/list' , [TagController::class , 'showAll']);
-Route::get('/show/{id}',[StoreController::class , 'showID']);
-Route::post('sch' , [BranchScheduleController::class , 'store']);
+Route::get('store/list',[StoreController::class , 'StoreListClient']);
+Route::post('store/filter' ,[StoreController::class , 'StoreFilterClient']);

@@ -254,5 +254,33 @@ class TagController extends Controller
         ],201);
 
     }
+
+
+    public function clientShow($lang ,$rest){
+        $tagCount = Tag::all();
+        foreach ($tagCount as $key => $value){
+                $tagCount[$key]->store_count = count(StoreTags::where('tag_id' ,$tagCount[$key]->id)->get());
+                $tagCount[$key]->save();
+        }
+
+        $data = DB::table("tags")
+        ->leftJoin("tag_locales", function($join){
+            $join->on("tags.id", "=", "tag_locales.tag_id");
+        })
+        ->leftJoin("tag_types", function($join){
+            $join->on("tags.type_id", "=", "tag_types.id");
+        })
+        ->leftJoin("rests",function($join){
+            $join->on("tags.rest_id" , "=" , "rests.id");
+        })
+        ->select("tags.id", "tag_locales.name", "tags.store_count", "tags.image", "tag_types.name as type" , "tags.status")
+        ->where("tag_locales.lang", "=", $lang)
+        ->where("rests.name", "=", $rest)
+        ->whereNull("tags.deleted_at")
+        ->where("tags.status" ,"=" , 1)
+        ->get();
+
+        return $data;
+    }
     
 }

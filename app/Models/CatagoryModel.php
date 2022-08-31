@@ -6,22 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class BranchLocals extends Model
+class CatagoryModel extends Model
 {
-    use SoftDeletes;
     use HasFactory;
-
+    Use SoftDeletes;
     protected $fillable = [
-        'name',
-        'address',
-        'lang',
+        'catagory_id',
+        'branch_count',
+        'image',
         'status',
-        'branch_id'
+        'rest_id',
+        'store_id'
     ];
 
+    public function locals(){
 
-    public function branch(){
-
-        return $this->belongsTo(Branch::class);
+        return $this->hasMany(CatagoryLocalsModel::class);
     }
 }

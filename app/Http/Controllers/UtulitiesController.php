@@ -49,7 +49,7 @@ class UtulitiesController extends Controller
     }
 
 
-    public function destroyCurenncy(Request $request){
+    public function destroyCurrency(Request $request){
 
         $request->validate([
             'name'=>'requried'

@@ -10,10 +10,15 @@ use App\Models\Rest;
 use App\Models\Store;
 use App\Models\StoreLocals;
 use App\Models\StoreTags;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use App\Models\StoreType;
 use App\Models\Tag;
+use App\Models\User;
+use Illuminate\Pagination\Factory;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session as FacadesSession;
 
 use function PHPSTORM_META\map;
 
@@ -206,6 +211,64 @@ class StoreController extends Controller
         return response([
             'Message'=>'status changed'
         ],201);
+    }
+
+
+    public function StoreListClient(){
+
+        
+    }
+
+
+    public function StoreFilterClient(Request $request){
+
+        $request->validate([
+            'lat'=>'required',
+            'long'=>'required',
+
+        ]);
+        $tag_id = 0;
+        $stores = "";
+        $branchs = Branch::all();
+        $store_ids = [];
+        if($tag_id = Tag::where('name',$request->tag)->first())
+        {
+            $stores = StoreTags::where('tag_id',$tag_id->id)->get();
+            foreach($stores as $key => $value){
+                $store_id = $stores[$key]->store_id;
+                array_push($store_ids , $store_id);
+            }
+            $branchs = Branch::whereIn('store_id' ,$store_ids)->get();
+            
+    
+
+        }   
+
+ 
+        $array = array();
+        foreach($branchs as $key => $value){
+            
+            $branch = $branchs[$key];
+            $lat = $branch->lat;
+            $long = $branch->long;
+        
+    
+            $theta = $long - $request->long; 
+            $dist = sin(deg2rad($lat)) * sin(deg2rad($request->lat)) +  cos(deg2rad($lat)) * cos(deg2rad($request->lat)) * cos(deg2rad($theta)); 
+            $dist = acos($dist); 
+            $dist = rad2deg($dist); 
+            $miles = $dist * 60 * 1.1515 * 1.609344;
+              if($branch->max_distance >= $miles){
+                $array = Arr::add($array, $branch->id, ['name'=>$branch->name ,'profile' => $branch->profile , 'cover'=>$branch->cover]);
+            }
+
+        }
+        return $array;
+
+
+
+
+
     }
     
     

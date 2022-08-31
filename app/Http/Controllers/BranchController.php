@@ -18,11 +18,14 @@ class BranchController extends Controller
 
 
         return Store::select('id','name')->get();
+
     }
 
-    public function show($name){
+    public function show($id){
         
-        $branch = Branch::where('store', $name)->select('id','name','address','phone','status')->get();
+        $branch = Branch::with(["locals" =>function($query){
+            $query->select('branch_id','name','address');
+        }])->where('store_id', $id)->select('id','name','address','phone','status')->get();
         
         return $branch;
     }
@@ -49,18 +52,17 @@ class BranchController extends Controller
             'amount'=>'required',
             'payload'=>'required',  
         ]);
-        $payArray = explode(',', $request->payment);
-        $currencyArray = explode(',',$request->currency);
-        foreach($payArray as $key=>$value){
-            $payment .=  $payArray[$key].",";
+        // $payArray = explode(',', $request->payment);
+        // $currencyArray = explode(',',$request->currency);
+        // foreach($payArray as $key=>$value){
+        //     $payment .=  $payArray[$key].",";
 
-        }
-        foreach($$currencyArray as $key=>$value){
-            $currency .=  $currencyArray[$key].",";
-
-        }
-        trim($payment, ',');
-        trim($currency, ',');
+        // }
+     
+        //$currency = implode(',',$currencyArray);
+        // return $currency;
+        // trim($payment, ',');
+        // trim($currency, ',');
         $branch = Branch::create([
             'name'=>$request->name,
             'store_id'=>$request->store_id,
@@ -70,14 +72,15 @@ class BranchController extends Controller
             'lat'=>$request->lat,
             'long'=>$request->long,
             'phone'=>$request->phone,
-            'currency'=>$currency,
-            'payment'=>$payment,
+            'currency'=>$request->currency,
+            'payment'=>$request->payment,
             'cash_limit'=>$request->cash_limit,
             'amount'=>$request->amount,
             'payload'=>$request->payload,
             'profile'=>'null',
             'cover'=>'null',
-            'status'=>1
+            'status'=>1,
+            'max_distance'=>$request->max_distance
 
         ]);
 
@@ -97,7 +100,7 @@ class BranchController extends Controller
         }
         $branch->save();
 
-        $schedule = new BranchSchedule();
+        $schedule = new BranchScheduleController();
         $schedule->store($request , $branch);
 
         $Locals = new BranchLocalsController();
@@ -108,7 +111,12 @@ class BranchController extends Controller
 
     public function showID($id){
 
-        if($branch = Branch::find($id)){
+        if($branch = Branch::with(["locals" =>function($query){
+            $query->select('branch_id','name','address');
+        }])->with(["schedule" =>function($query){
+            $query->select('branch_id', 'start', 'end','isclosed' ,'name');
+        }])->find($id)){
+
             return $branch;
         }
 
@@ -143,6 +151,7 @@ class BranchController extends Controller
             'cash_limit'=>$request->cash_limit,
             'amount'=>$request->amount,
             'payload'=>$request->payload,
+            'max_distance'=>$request->max_distance
         ]);
 
         $profile = $request->hasFile('profile');
@@ -168,6 +177,10 @@ class BranchController extends Controller
         }
 
         $branch->save();
+
+
+        $schedule = new BranchScheduleController();
+        $schedule->edit($request , $branch);
 
 
         $Locals = new BranchLocalsController();
@@ -213,6 +226,7 @@ class BranchController extends Controller
 
         Branch::find($request->id)->delete();
         BranchLocals::where('branch_id',$request->id)->delete();
+        BranchSchedule::where('branch_id', $request->id)->delete();
 
         return response([
             'Message'=>'Branch Deleteed ! '
@@ -229,6 +243,7 @@ class BranchController extends Controller
         foreach($branchs as $key => $value){
 
             BranchLocals::where('branch_id',$branchs[$key]->id)->delete();
+            BranchSchedule::where('branch_id', $branchs[$key]->id)->delete();
         } 
         $branchs->delete();
 
