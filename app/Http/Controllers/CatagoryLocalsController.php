@@ -29,4 +29,26 @@ class CatagoryLocalsController extends Controller
         ],201);
 
     }
+
+
+    public function edit($request , $catagory){
+
+        $languages = Language::all();
+            // dd($request);   
+        foreach ($languages as $key => $value) {
+               
+            $catagoryLocals = CatagoryLocalsModel::where('catagory_id' , $catagory->id)->where('lang',$languages[$key]['lang'])->update([
+                    'name' => $request->input($languages[$key]['lang'].'_name'),
+                    'catagory_id'=>$catagory->id,
+                    'status'=>1,
+                    'lang'=>$languages[$key]['lang']
+               ]);
+            
+            
+        } 
+
+        return response([
+            'message'=>'Catagory updated !!!'
+        ],201);
+    }
 }

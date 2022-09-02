@@ -21,10 +21,10 @@ class BranchController extends Controller
 
     }
 
-    public function show($id){
+    public function show($lang , $id){
         
-        $branch = Branch::with(["locals" =>function($query){
-            $query->select('branch_id','name','address');
+        $branch = Branch::with(["locals" =>function($query)use ($lang){
+            $query->select('branch_id','name','address')->where('lang', $lang);
         }])->where('store_id', $id)->select('id','name','address','phone','status')->get();
         
         return $branch;

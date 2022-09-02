@@ -21,6 +21,18 @@ class CatagoryModel extends Model
 
     public function locals(){
 
-        return $this->hasMany(CatagoryLocalsModel::class);
+        return $this->hasMany(CatagoryLocalsModel::class , 'catagory_id');
+    }
+
+    public function sub(){
+        return $this->hasMany(CatagoryModel::class ,'catagory_id');
+    }
+
+    public function store(){
+        return $this->hasMany(StoreLocals::class , 'store_id' , 'store_id');
     }
 }
+
+
+// ->with(["locals"=>function($query){
+//     $query->select('id','name','catagory_id','lang');

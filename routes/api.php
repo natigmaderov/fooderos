@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BranchScheduleController;
+use App\Http\Controllers\CatagoryController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\LangugeController;
 use App\Http\Controllers\RoleController;
@@ -81,7 +82,7 @@ Route::group(['middleware'=>'api'] , function ($routes){
 
     Route::prefix('branch')->group(function($routes){
         Route::get('/stores' , [BranchController::class , 'stores']);
-        Route::get('/list/{id}',[BranchController::class , 'show']);
+        Route::get('/list/{lang}/{id}',[BranchController::class , 'show']);
         Route::post('/',[BranchController::class , 'store']);
         Route::get('/show/{id}',[BranchController::class , 'showID']);
         Route::post('/edit',[BranchController::class , 'edit']);
@@ -107,6 +108,18 @@ Route::group(['middleware'=>'api'] , function ($routes){
     //     Route::delete('/',[RoleController::class , 'destroy']);
 
     // });
+
+
+    Route::prefix('catagory')->group(function($routes){
+        Route::get('/show/{lang}/{rest}' , [CatagoryController::class , 'show']);
+        Route::get('/show/{id}' , [CatagoryController::class , 'showID']);
+        Route::post('/' , [CatagoryController::class , 'store']); 
+        Route::post('/edit' , [CatagoryController::class , 'edit']);   
+        Route::delete('/' , [CatagoryController::class , 'delete']);
+        Route::get('/list/{lang}/{rest}' ,[CatagoryController::class , 'list']); 
+        Route::post('/status' , [CatagoryController::class , 'status']);
+
+    });
     
 });
 //public apis
@@ -116,3 +129,9 @@ Route::get('city/{name}' , [CountryController::class , 'cities']);
 
 Route::get('store/list',[StoreController::class , 'StoreListClient']);
 Route::post('store/filter' ,[StoreController::class , 'StoreFilterClient']);
+
+
+Route::get('/show/{lang}/{rest}' , [CatagoryController::class , 'show']);
+Route::get('/show/{id}' , [CatagoryController::class , 'showID']);      
+Route::get('/list/{lang}/{rest}' ,[CatagoryController::class , 'list']); 
+Route::post('/status' , [CatagoryController::class , 'status']);

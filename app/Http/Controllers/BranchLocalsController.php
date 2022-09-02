@@ -41,7 +41,7 @@ class BranchLocalsController extends Controller
                
             $branchLocals = BranchLocals::where('branch_id' , $branch->id)->where('lang',$languages[$key]['lang'])->update([
                     'name' => $request->input($languages[$key]['lang'].'_name'),
-                    'bramch_id'=>$branch->id,
+                    'branch_id'=>$branch->id,
                     'address'=>$request->input($languages[$key]['lang'].'_address'),
                     'lang'=>$languages[$key]['lang']
                ]);
