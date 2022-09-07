@@ -7,6 +7,7 @@ use App\Models\CatagoryModel;
 use App\Models\Rest;
 use App\Models\Store;
 use App\Models\StoreLocals;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use phpDocumentor\Reflection\PseudoTypes\True_;
@@ -51,23 +52,23 @@ class CatagoryController extends Controller
         
         // return $tree;
         $rest_id =Rest::where('name' , $rest)->first()->id; 
-
+        $test = array();
         $catagory = CatagoryModel::with(["sub"=>function($query) use ($lang) {
             $query
-            ->select('id','catagory_id', 'branch_count' , 'store_id', 'image')->with(["locals"=>function($query)use ($lang){
+            ->select('id','catagory_id', 'branch_count' , 'store_id', 'image','status' )->with(["locals"=>function($query)use ($lang){
                 $query->select('id','name','catagory_id','lang')->where('lang' ,$lang); 
             }])
             ->with(["store"=>function($query) use ($lang){
                 $query->select('store_id' , 'name' , 'lang')->where('lang' , $lang);
             }])
             ->with(["sub"=>function($query) use ($lang){
-                $query->select('id','catagory_id', 'branch_count' , 'store_id')->with(["locals"=>function($query)use ($lang){
+                $query->select('id','catagory_id', 'branch_count' ,'status' ,'image' , 'store_id')->with(["locals"=>function($query)use ($lang){
                     $query->select('id','name','catagory_id','lang')->where('lang' ,$lang); 
                 }])
                 ->with(["store"=>function($query) use ($lang){
                     $query->select('store_id' , 'name' , 'lang')->where('lang' , $lang);
                 }])->with(["sub"=>function($query) use ($lang){
-                    $query->select('id','catagory_id', 'branch_count' , 'store_id')->with(["locals"=>function($query)use ($lang){
+                    $query->select('id','catagory_id', 'branch_count' , 'store_id','status' ,'image')->with(["locals"=>function($query)use ($lang){
                         $query->select('id','name','catagory_id','lang')->where('lang' ,$lang); 
                     }])->with(["store"=>function($query) use ($lang){
                         $query->select('store_id' , 'name' , 'lang')->where('lang' , $lang);
@@ -82,7 +83,7 @@ class CatagoryController extends Controller
         ->with(["store"=>function($query)use ($lang){
             $query->select('store_id' , 'name' , 'lang')->where('lang',$lang);
         }])->select('id','catagory_id','branch_count' , 'image' , 'status' , 'rest_id' , 'store_id')->get();
-
+        // array_push($test ,$catagory);
         return $catagory;
 
 
@@ -110,7 +111,7 @@ class CatagoryController extends Controller
     
         if($request->hasFile('image')){
             $dest_path = 'public/catagory/images';
-            $path = $request->file('profile')->storeAs($dest_path,$catagory->id."_image");
+            $path = $request->file('image')->storeAs($dest_path,$catagory->id."_image");
             $catagory->image = $catagory->id."_image";
         }
 
@@ -176,15 +177,14 @@ class CatagoryController extends Controller
     // }
 
 
-    public function showID($id){
+    public function showID($id , $lang){
         
         $catagory = CatagoryModel::with(["locals"=>function($query){
             $query->select('catagory_id' , 'name' , 'lang');
 
         }])->select('id', 'catagory_id' , 'image' , 'store_id')->find($id);
         $Parent = CatagoryLocalsModel::where('catagory_id',$catagory->catagory_id)->where('lang' , 'En')->first()->name??0;
-        $Store =Store::where('id', $catagory->store_id)->first()->name;
-        
+        $Store =StoreLocals::where('store_id', $catagory->store_id)->where('lang' ,$lang)->select('name')->get()??0;
         return response([
             'catagory'=>$catagory,
             'store'=>$Store,
@@ -197,17 +197,31 @@ class CatagoryController extends Controller
         $catagorylist =[];
         $storeList = [];
         $rest_id = Rest::where('name' ,$rest)->first()->id;
+        $catgs =CatagoryModel::has('sub')->with(["sub" =>function($query){$query->has('sub')->with('sub');}])->get();
+        $temp = [];
+        $removeList = [];
+        foreach($catgs  as $key ){
+                foreach($key->sub as $key =>$value){
+                    array_push($temp , $value->sub);
+                }
+        }
+        foreach($temp as $a ){
+            foreach($a as $key ){
+                array_push($removeList , $key->id);
+            }
+        }
+
         $catagory=CatagoryModel::with(["locals"=>function($query)use ($lang){
             $query->where('lang' ,$lang);
-        }])->where('rest_id' , $rest_id)->get();
+        }])->where('rest_id' , $rest_id)->whereNotIn('id',$removeList)->where('status' ,1)->get();
        
         foreach($catagory as $key =>$value){
             array_push( $catagorylist,$catagory[$key]->locals[0]->name??'');
         }
 
-        $Store = Store::with(["store_locals"=>function($query)use ($lang){
+        $Store = Store::where('store_type' ,$rest_id)->with(["store_locals"=>function($query)use ($lang){
             $query->where('lang' ,$lang);
-        }])->get();
+        }])->where('status' ,1)->get();
         foreach($Store as $key =>$value){
             array_push( $storeList,$Store[$key]->store_locals[0]->name??'');
         }

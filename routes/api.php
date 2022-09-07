@@ -9,9 +9,11 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserDetailsController;
 use App\Http\Controllers\UtulitiesController;
 use App\Http\Controllers\VisitorController;
+use App\Models\Product;
 use App\Models\UserDetails;
 use App\Models\Visitor;
 use Illuminate\Contracts\Cache\Store;
@@ -112,12 +114,31 @@ Route::group(['middleware'=>'api'] , function ($routes){
 
     Route::prefix('catagory')->group(function($routes){
         Route::get('/show/{lang}/{rest}' , [CatagoryController::class , 'show']);
-        Route::get('/show/{id}' , [CatagoryController::class , 'showID']);
+        Route::get('/shows/{id}/{lang}' , [CatagoryController::class , 'showID']);
         Route::post('/' , [CatagoryController::class , 'store']); 
         Route::post('/edit' , [CatagoryController::class , 'edit']);   
         Route::delete('/' , [CatagoryController::class , 'delete']);
         Route::get('/list/{lang}/{rest}' ,[CatagoryController::class , 'list']); 
         Route::post('/status' , [CatagoryController::class , 'status']);
+
+    });
+
+    Route::prefix('product')->group(function($routes){
+        //creating products/variants/addons
+        Route::post('/', [ProductController::class , 'storeProduct']);
+        Route::post('/variants', [ProductController::class , 'storeVariants']);
+        Route::post('/addons', [ProductController::class , 'storeAddons']);
+        //editing products/variants/addons
+        Route::post('/edit' , [ProductController::class , 'editProduct']);
+        //showing ....
+        Route::get('show/{lang}/{rest}' , [ProductController::class , 'showProducts']);
+        //showing inviduals
+        Route::get('show/{id}' , [ProductController::class , 'showId']);
+        //status change 
+        Route::post('/status' , [ProductController::class , 'status']);
+        //delete
+        Route::delete('/' , [ProductController::class , 'delete']);
+
 
     });
     
@@ -130,8 +151,8 @@ Route::get('city/{name}' , [CountryController::class , 'cities']);
 Route::get('store/list',[StoreController::class , 'StoreListClient']);
 Route::post('store/filter' ,[StoreController::class , 'StoreFilterClient']);
 
+Route::get('show/{lang}/{rest}' , [ProductController::class , 'showProducts']);
+Route::get('show/{id}' , [ProductController::class , 'showId']);
 
-Route::get('/show/{lang}/{rest}' , [CatagoryController::class , 'show']);
-Route::get('/show/{id}' , [CatagoryController::class , 'showID']);      
-Route::get('/list/{lang}/{rest}' ,[CatagoryController::class , 'list']); 
-Route::post('/status' , [CatagoryController::class , 'status']);
+
+
