@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BranchCatagoryController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BranchScheduleController;
 use App\Http\Controllers\CatagoryController;
@@ -13,6 +14,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserDetailsController;
 use App\Http\Controllers\UtulitiesController;
 use App\Http\Controllers\VisitorController;
+use App\Models\Branch;
+use App\Models\BranchCatalog;
 use App\Models\Product;
 use App\Models\UserDetails;
 use App\Models\Visitor;
@@ -139,6 +142,18 @@ Route::group(['middleware'=>'api'] , function ($routes){
         //delete
         Route::delete('/' , [ProductController::class , 'delete']);
 
+        Route::get('/types' , [ProductController::class , 'types']);
+
+
+    });
+
+
+    Route::prefix('branch/catalogs')->group(function($routes){
+        Route::get('/show' , [BranchCatagoryController::class , 'show']);
+        Route::post('/', [BranchCatagoryController::class , 'store']);
+        Route::post('/status' , [BranchCatagoryController::class , 'status']);
+        Route::post('/edit' , [BranchCatagoryController::class , 'edit']);
+        Route::delete('/' , [BranchCatagoryController::class , 'delete']);
 
     });
     
@@ -154,5 +169,7 @@ Route::post('store/filter' ,[StoreController::class , 'StoreFilterClient']);
 Route::get('show/{lang}/{rest}' , [ProductController::class , 'showProducts']);
 Route::get('show/{id}' , [ProductController::class , 'showId']);
 
+
+Route::get('/show' , [BranchCatagoryController::class , 'show']);
 
 

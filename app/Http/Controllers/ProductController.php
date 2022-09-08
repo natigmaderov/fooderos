@@ -13,6 +13,7 @@ use App\Models\Store;
 use App\Models\StoreLocals;
 use App\Models\Variants;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
 
@@ -320,6 +321,20 @@ class ProductController extends Controller
         ]);
         $product = Product::find($request->id);
         $product->status = $request->status;
+        $Locals =ProductLocals::select('id')->where('product_id' , $product->id)->get();
+        $variants = ProductVariants::select('id')->where('product_id' , $product->id)->get();
+        $addons = ProductAddons::select('id')->where('product_id' , $product->id)->get();
+        
+        ProductVariants::whereIn('id', $variants)->update([
+            'status'=>$request->status
+        ]);
+        ProductAddons::whereIn('id', $addons)->update([
+            'status'=>$request->status
+        ]);
+        ProductLocals::whereIn('id',$Locals)->update([
+         'status'=>$request->status
+        ]);
+
         $product->save();
 
     }
@@ -340,6 +355,12 @@ class ProductController extends Controller
         ->with('addons')->with('store')->find($id);
 
         return $product;
+
+    }
+
+    public function types(){
+        $variants = DB::table('variants')->select('name')->get();
+        return $variants;
 
     }
 

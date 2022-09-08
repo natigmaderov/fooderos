@@ -551,6 +551,7 @@ class ComposerStaticInit14df9ef0d6d83952790773fa025e12cd
     public static $classMap = array (
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
+        'App\\Http\\Controllers\\BranchCatagoryController' => __DIR__ . '/../..' . '/app/Http/Controllers/BranchCatagoryController.php',
         'App\\Http\\Controllers\\BranchController' => __DIR__ . '/../..' . '/app/Http/Controllers/BranchController.php',
         'App\\Http\\Controllers\\BranchLocalsController' => __DIR__ . '/../..' . '/app/Http/Controllers/BranchLocalsController.php',
         'App\\Http\\Controllers\\BranchScheduleController' => __DIR__ . '/../..' . '/app/Http/Controllers/BranchScheduleController.php',
@@ -588,7 +589,9 @@ class ComposerStaticInit14df9ef0d6d83952790773fa025e12cd
         'App\\Models\\AddonsLocals' => __DIR__ . '/../..' . '/app/Models/AddonsLocals.php',
         'App\\Models\\Appkeys' => __DIR__ . '/../..' . '/app/Models/Appkeys.php',
         'App\\Models\\Branch' => __DIR__ . '/../..' . '/app/Models/Branch.php',
+        'App\\Models\\BranchCatalog' => __DIR__ . '/../..' . '/app/Models/BranchCatalog.php',
         'App\\Models\\BranchLocals' => __DIR__ . '/../..' . '/app/Models/BranchLocals.php',
+        'App\\Models\\BranchProduct' => __DIR__ . '/../..' . '/app/Models/BranchProduct.php',
         'App\\Models\\BranchSchedule' => __DIR__ . '/../..' . '/app/Models/BranchSchedule.php',
         'App\\Models\\CatagoryLocalsModel' => __DIR__ . '/../..' . '/app/Models/CatagoryLocalsModel.php',
         'App\\Models\\CatagoryModel' => __DIR__ . '/../..' . '/app/Models/CatagoryModel.php',

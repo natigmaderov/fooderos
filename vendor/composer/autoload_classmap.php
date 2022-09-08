@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
+    'App\\Http\\Controllers\\BranchCatagoryController' => $baseDir . '/app/Http/Controllers/BranchCatagoryController.php',
     'App\\Http\\Controllers\\BranchController' => $baseDir . '/app/Http/Controllers/BranchController.php',
     'App\\Http\\Controllers\\BranchLocalsController' => $baseDir . '/app/Http/Controllers/BranchLocalsController.php',
     'App\\Http\\Controllers\\BranchScheduleController' => $baseDir . '/app/Http/Controllers/BranchScheduleController.php',
@@ -45,7 +46,9 @@ return array(
     'App\\Models\\AddonsLocals' => $baseDir . '/app/Models/AddonsLocals.php',
     'App\\Models\\Appkeys' => $baseDir . '/app/Models/Appkeys.php',
     'App\\Models\\Branch' => $baseDir . '/app/Models/Branch.php',
+    'App\\Models\\BranchCatalog' => $baseDir . '/app/Models/BranchCatalog.php',
     'App\\Models\\BranchLocals' => $baseDir . '/app/Models/BranchLocals.php',
+    'App\\Models\\BranchProduct' => $baseDir . '/app/Models/BranchProduct.php',
     'App\\Models\\BranchSchedule' => $baseDir . '/app/Models/BranchSchedule.php',
     'App\\Models\\CatagoryLocalsModel' => $baseDir . '/app/Models/CatagoryLocalsModel.php',
     'App\\Models\\CatagoryModel' => $baseDir . '/app/Models/CatagoryModel.php',
