@@ -4,15 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Variants extends Model
+class VariantOptionsValues extends Model
 {
     use HasFactory;
+    use SoftDeletes;
+
 
 
     protected $fillable = [
-        'name',
-        'status'
+        'variant_option_id',
+        'status',
     ];
-
 }

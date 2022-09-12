@@ -13,15 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('product_variants', function (Blueprint $table) {
+        Schema::create('product_variants_combinations', function (Blueprint $table) {
             $table->id();
-            $table->string('image');
-            $table->string('sku');
-            $table->string('barcode');
-            $table->integer('price');
-            $table->string('weight');
-            $table->integer('status');
-            $table->integer('product_id');
+            $table->integer('variant_option_values_id');
+            $table->integer('product_variant_id');
+            $table->integer('satatus');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -34,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('product_variants');
+        Schema::dropIfExists('product_variants_combinations');
     }
 };

@@ -15,6 +15,15 @@ return new class extends Migration
     {
         Schema::create('branch_products', function (Blueprint $table) {
             $table->id();
+            $table->integer('branch_id');
+            $table->string('path');
+            $table->integer('product_id');
+            $table->integer('unit_price');
+            $table->integer('weight');
+            $table->integer('order_id');
+            $table->integer('isPublic');
+            $table->integer('status');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

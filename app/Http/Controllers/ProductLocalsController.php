@@ -18,7 +18,7 @@ class ProductLocalsController extends Controller
             $productLocals = ProductLocals::create([
                     'name' => $request->input($languages[$key]['lang'].'_name'),
                     'product_id'=>$product->id,
-                    'description'=>$request->input($languages[$key]['lang'].'description'),
+                    'description'=>$request->input($languages[$key]['lang'].'_description'),
                     'lang'=>$languages[$key]['lang'],
                     'status'=>1
                ]);

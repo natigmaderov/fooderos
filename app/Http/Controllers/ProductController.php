@@ -11,6 +11,7 @@ use App\Models\ProductVariants;
 use App\Models\Rest;
 use App\Models\Store;
 use App\Models\StoreLocals;
+use App\Models\VariantOptions;
 use App\Models\Variants;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,23 +28,25 @@ class ProductController extends Controller
             'rest',
             'manager',
             'isVariant',
-            'isAddons'
+            'isAddons',
+            'position_id'
         ]);
 
         $rest = Rest::where('name', $request->rest)->first();
         $store = StoreLocals::where('name', $request->store)->first();
         $manager = Manager::where('name', $request->manager)->first();
+        
         $product = Product::create([
-            'store_id' => $store->store_id ?? 0,
+            'store_id' => $store->store_id??0,
             'image' => '',
             'sku' => $request->sku,
             'rest_id' => $rest->id,
-            'barcode' => $request->barcode ?? '',
-            'position_id' => $request->position_id ?? '',
-            'manager' => $manager->id ?? 0,
+            'barcode' => $request->barcode??'',
+            'position_id' => $request->position_id??'',
+            'manager_id' => $manager->id??0,
             'price' => $request->price,
             'isVariant' => $request->isVariant,
-            'idAddons' => $request->isAddons,
+            'isAddons' => $request->isAddons,
             'status' => 1
         ]);
 
@@ -62,7 +65,6 @@ class ProductController extends Controller
             "product_id" => $product->id,
             "Variants" => $product->isVariant,
             "Addons" => $product->isAddons,
-            "variants" => Variants::select('id', 'name')->where('status', 1)->get()
         ], 201);
     }
 
@@ -73,37 +75,27 @@ class ProductController extends Controller
     public function storeVariants(Request $request)
     {
         $request->validate([
-            'product_id' => 'required',
-            'variants' => 'required',
+            'options'=>'required'
         ]);
-        $variants = explode(',', $request->variants);
+        $product_id = $request->product_id;
 
-        for ($i = 0; $i < count($variants); $i += 6) {
+        $options = $request->options;
+        return $options;
+        foreach($options as $option){
+            $variants_option = VariantOptions::create([
+                'status'=>1,
+                'product_id'=>$product_id
+            ]);
+            foreach ($option->options as $key => $value){
+                
 
-            $data = ProductVariants::create([    
-                'image' => '',
-                'sku' => $variants[$i + 1],
-                'barcode' => $variants[$i + 2],
-                'unit_price' => $variants[$i + 3],
-                'weight' => $variants[$i + 4],
-                'status' => $variants[$i + 5],
-                'product_id' => $request->product_id
-            ]); 
-            $Locals = new ProductLocalsController();
-            $Locals->storeVariants($data->id , $variants[$i]);
-            
-            $image_data = $variants[$i] . '_image';
-            if ($request->hasFile($image_data)) {
-                $dest_path = 'public/product/variants/images';
-                $path = $request->file($image_data)->storeAs($dest_path, $image_data);
-                $data->image = $image_data;
             }
-            $data->save();
+
+            
+
+
+
         }
-        return response([
-            'Message' => 'Variants Created',
-            'product_id' => $request->product_id
-        ], 201);
     }
 
 
@@ -358,10 +350,13 @@ class ProductController extends Controller
 
     }
 
-    public function types(){
-        $variants = DB::table('variants')->select('name')->get();
-        return $variants;
+    public function test(Request $request){
+        $test = json_decode($request->test);
+
+        return $test[0]->test ;
 
     }
+
+
 
 }

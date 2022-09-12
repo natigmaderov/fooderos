@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('variant_locals', function (Blueprint $table) {
+        Schema::create('variant_options_values', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->integer('variant_id');
+  
+            $table->integer('variant_option_id');
             $table->integer('status');
-            $table->string('lang');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('variant_locals');
+        Schema::dropIfExists('variant_options_values');
     }
 };

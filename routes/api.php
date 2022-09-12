@@ -142,7 +142,7 @@ Route::group(['middleware'=>'api'] , function ($routes){
         //delete
         Route::delete('/' , [ProductController::class , 'delete']);
 
-        Route::get('/types' , [ProductController::class , 'types']);
+
 
 
     });
@@ -168,8 +168,8 @@ Route::post('store/filter' ,[StoreController::class , 'StoreFilterClient']);
 
 Route::get('show/{lang}/{rest}' , [ProductController::class , 'showProducts']);
 Route::get('show/{id}' , [ProductController::class , 'showId']);
-
+Route::post('/test' , [ProductController::class  , 'test']);
 
 Route::get('/show' , [BranchCatagoryController::class , 'show']);
 
-
+Route::post('/variants', [ProductController::class , 'storeVariants']);

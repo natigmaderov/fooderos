@@ -13,13 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('product_variants', function (Blueprint $table) {
+        Schema::create('variant_options', function (Blueprint $table) {
             $table->id();
-            $table->string('image');
-            $table->string('sku');
-            $table->string('barcode');
-            $table->integer('price');
-            $table->string('weight');
             $table->integer('status');
             $table->integer('product_id');
             $table->softDeletes();
@@ -34,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('product_variants');
+        Schema::dropIfExists('variant_options');
     }
 };

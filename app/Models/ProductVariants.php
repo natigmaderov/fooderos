@@ -13,12 +13,13 @@ class ProductVariants extends Model
 
     protected $fillable =[
         'image',
+        'product_id',
         'sku',
         'barcode',
-        'unit_price',
+        'price',
         'weight',
         'status',
-        'product_id'
+
     ];
 
 

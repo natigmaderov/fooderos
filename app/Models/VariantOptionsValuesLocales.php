@@ -6,22 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class VariantLocals extends Model
+class VariantOptionsValuesLocales extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
-
     protected $fillable =[
         'name',
-        'variant_id',
+        'lang',
         'status',
-        'lang'
-
+        'variant_option_value_id'
     ];
-
-    public function variats(){
-
-        return $this->belongsTo(ProductVariants::class , 'variant_id' , 'variant_id');
-    }
 }

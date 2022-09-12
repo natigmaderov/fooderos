@@ -14,13 +14,25 @@ class BranchProduct extends Model
 
     protected $fillable = [
         'branch_id',
-        'catagory_id',
         'path',
+        'image',
         'product_id',
         'unit_price',
         'weight',
         'order_id',
-        'isPublic'
+        'isPublic',
+        'working_hours',
+        'status', 
     ];
+
+
+    public function product(){
+
+        return $this->hasOne(Product::class , 'product_id' , 'product_id');
+    }
+
+    public function catalogs(){
+
+        return $this->hasMany(BranchProductCatalogs::class , 'branch_product_id');
+    }
 }
-    
