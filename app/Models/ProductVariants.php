@@ -32,4 +32,9 @@ class ProductVariants extends Model
     public function locals(){
         return $this->hasMany(VariantLocals::class , 'variant_id'); 
     }
+
+    public function combination(){
+
+        return $this->hasMany(ProductVariantsCombination::class , 'product_variant_id');
+    }
 }

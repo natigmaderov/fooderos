@@ -16,4 +16,14 @@ class VariantOptions extends Model
         'product_id',
         'status',
     ];
+
+
+    public function locales(){
+        return $this->hasMany(VariantOptionsLocales::class , 'variant_option_id');
+    }
+
+    public function values(){
+
+        return $this->hasMany(VariantOptionsValues::class , 'variant_option_id');
+    }
 }

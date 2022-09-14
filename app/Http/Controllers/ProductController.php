@@ -3,21 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\CatagoryModel;
+use App\Models\Language;
 use App\Models\Manager;
 use App\Models\Product;
 use App\Models\ProductAddons;
 use App\Models\ProductLocals;
 use App\Models\ProductVariants;
+use App\Models\ProductVariantsCombination;
 use App\Models\Rest;
 use App\Models\Store;
 use App\Models\StoreLocals;
 use App\Models\VariantOptions;
+use App\Models\VariantOptionsLocales;
+use App\Models\VariantOptionsValues;
+use App\Models\VariantOptionsValuesLocales;
 use App\Models\Variants;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-
-
+use PhpOption\Option;
 
 class ProductController extends Controller
 {
@@ -72,32 +76,108 @@ class ProductController extends Controller
     ////////////////////////////////////////////////////////////////////////////////////
 
 
-    public function storeVariants(Request $request)
+    public function storeOptions(Request $request)
     {
         $request->validate([
             'options'=>'required'
         ]);
         $product_id = $request->product_id;
-
         $options = $request->options;
-        return $options;
         foreach($options as $option){
             $variants_option = VariantOptions::create([
                 'status'=>1,
                 'product_id'=>$product_id
             ]);
-            foreach ($option->options as $key => $value){
-                
-
+            $languages = Language::all();
+           
+            foreach ($languages as $key => $value) {
+                $option_locales = VariantOptionsLocales::create([
+                    'name'=>$option['option'][$languages[$key]['lang']."_name"],
+                    'lang'=>$languages[$key]['lang'],
+                    'status'=>'1',
+                    'variant_option_id'=>$variants_option->id
+                ]);         
+            }    
+            foreach($option['values'] as $val){
+                $option_values = VariantOptionsValues::create([
+                    'status'=>1,
+                    'variant_option_id'=>$variants_option->id
+                ]);
+                foreach($languages as $key => $value){
+                    $option_values_locales = VariantOptionsValuesLocales::create([
+                        'name'=>$val[$languages[$key]['lang'].'_name'],
+                        'status'=>1,
+                        'lang'=>$languages[$key]['lang'],
+                        'variant_option_value_id'=>$option_values->id
+                    ]);
+                }
             }
-
-            
-
-
-
         }
+        return response([
+            'message'=>'success'
+        ],201);
+        
+
     }
 
+    public function storeVariants(Request $request){
+        // $request->validate([
+        //     'variants'=>'required'
+        // ]);
+
+        
+
+        $variants = json_decode($request->test);
+
+        $req = $request;
+        $i = 0;
+        foreach($variants as $variant){
+            $options = $variant->options;
+            return $request;
+            $product_variants = ProductVariants::create([
+                'sku'=>$variant->data->sku,
+                'barcode'=>$variant->data->barcode,
+                'product_id'=>$request->product_id,
+                'price'=>$variant->data->price,
+                'weight'=>$variant->data->weight,
+                'status'=>$variant->data->status,
+                'image'=>''
+            ]);
+            
+            if ($request[$i]->hasFile('image')) {
+                $dest_path = 'public/product/variants/images';
+                $path = $request[$i]->file('image')->storeAs($dest_path, $product_variants->id . "_image");
+                $product_variants->image = $product_variants->id . "_image";
+                $i++;
+            
+            }
+            $product_variants->save();
+
+            $options = $variant->options;
+            
+            $ids = VariantOptionsValuesLocales::whereIn('name' , $options)->pluck('variant_option_value_id');
+            $options = VariantOptionsValues::whereIn('id' , $ids)->select('id' , 'variant_option_id')->get();
+            
+
+            foreach($options as $option){
+                $combination = ProductVariantsCombination::create([
+                    'variant_option_values_id'=>$option->id,
+                    'variant_option_id'=>$option->variant_option_id,
+                    'status'=>$product_variants->status,
+                    'product_variant_id'=>$product_variants->id
+                ]);
+            }
+        }
+        return response([
+            'message'=>'Product Variants addded !',
+            'product_id'=>$request->product_id
+        ],201);
+
+        // ProductVariantsCombination::where('product_variant_id' ,1)
+        // ->locales()
+        // ->select('id','variant_option_values_id' , 'product_variant_id' , 'variant_option_id')->get();
+
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////
 

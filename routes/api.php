@@ -11,6 +11,7 @@ use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserDetailsController;
 use App\Http\Controllers\UtulitiesController;
 use App\Http\Controllers\VisitorController;
@@ -21,6 +22,7 @@ use App\Models\UserDetails;
 use App\Models\Visitor;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Http\Request;
+use Illuminate\Routing\RouteUri;
 use Illuminate\Support\Facades\Route;
 
 
@@ -172,4 +174,15 @@ Route::post('/test' , [ProductController::class  , 'test']);
 
 Route::get('/show' , [BranchCatagoryController::class , 'show']);
 
+Route::post('/options', [ProductController::class , 'storeOptions']);
 Route::post('/variants', [ProductController::class , 'storeVariants']);
+
+
+
+Route::prefix('test')->group(function($routes){
+    Route::get('/product' , [TestController::class , 'showProducts']);
+    Route::get('/variants/{id}' , [TestController::class , 'showVariants']);
+    Route::post('/st1' , [TestController::class , 'statusVariants']);
+    Route::post('/st2' , [TestController::class , 'statusOptions']);
+
+});
