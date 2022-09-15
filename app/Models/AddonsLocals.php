@@ -18,5 +18,10 @@ class AddonsLocals extends Model
         'lang'
 
     ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
     
 }

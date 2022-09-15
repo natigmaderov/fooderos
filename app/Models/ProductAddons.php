@@ -20,8 +20,17 @@ class ProductAddons extends Model
         'status',
         'product_id'
     ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
     public function product(){
 
         return $this->belongsTo(Product::class);
+    }
+    public function locales(){
+
+        return $this->hasMany(AddonsLocals::class , 'addon_id');
     }
 }

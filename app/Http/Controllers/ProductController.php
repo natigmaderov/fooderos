@@ -39,7 +39,6 @@ class ProductController extends Controller
         $rest = Rest::where('name', $request->rest)->first();
         $store = StoreLocals::where('name', $request->store)->first();
         $manager = Manager::where('name', $request->manager)->first();
-        
         $product = Product::create([
             'store_id' => $store->store_id??0,
             'image' => '',
@@ -133,7 +132,6 @@ class ProductController extends Controller
         $i = 0;
         foreach($variants as $variant){
             $options = $variant->options;
-            return $request;
             $product_variants = ProductVariants::create([
                 'sku'=>$variant->data->sku,
                 'barcode'=>$variant->data->barcode,
@@ -144,9 +142,9 @@ class ProductController extends Controller
                 'image'=>''
             ]);
             
-            if ($request[$i]->hasFile('image')) {
+            if ($request->hasFile($i)) {
                 $dest_path = 'public/product/variants/images';
-                $path = $request[$i]->file('image')->storeAs($dest_path, $product_variants->id . "_image");
+                $path = $request->file($i)->storeAs($dest_path, $product_variants->id . "_image");
                 $product_variants->image = $product_variants->id . "_image";
                 $i++;
             
@@ -191,13 +189,16 @@ class ProductController extends Controller
             'addons' => 'required'
         ]);
         $addons = $request->addons;
+        
         foreach ($addons as $key => $value) {
+       
+          
             $data = ProductAddons::create([
-                'sku' => $addons[$key]->sku,
-                'barcode' => $addons[$key]->barcode,
-                'unit_price' => $addons[$key]->addons,
-                'weight' => $addons[$key]->weight,
-                'status' => $addons[$key]->status,
+                'sku' => $addons[$key]['sku'],
+                'barcode' => $addons[$key]['barcode'],
+                'unit_price' =>$addons[$key]['price'],
+                'weight' => $addons[$key]['weight'],
+                'status' => $addons[$key]['status'],
                 'product_id' => $request->product_id
             ]);
             $Locals = new ProductLocalsController();
@@ -259,62 +260,40 @@ class ProductController extends Controller
 
 
         if ($request->page == 'variants') {
+            
+            $variants = json_decode($request->test);
 
-            $variants = explode(',', $request->variants);
-
-            for ($i = 0; $i < count($variants); $i += 6) {
-
-                if ($product = ProductVariants::where('product_id', $request->product_id)->where('name', $variants[$i])->first()) {
-                    $product->update([
-                        'name' => $variants[$i],
-                        'image' => '',
-                        'sku' => $variants[$i + 1],
-                        'barcode' => $variants[$i + 2],
-                        'unit_price' => $variants[$i + 3],
-                        'weight' => $variants[$i + 4],
-                        'status' => $variants[$i + 5],
-                    ]);
-                    $image_data = $variants[$i] . '_image';
-                    if ($request->hasFile($image_data)) {
-                        $dest_path1 = 'storage/product/variants/images/' . $product->image;
-                        if (File::exists($dest_path1)) {
-                            File::delete($dest_path1);
-                        }
-                        $dest_path = 'public/product/variants/images';
-                        $path = $request->file($image_data)->storeAs($dest_path, $image_data);
-                        $product->image = $image_data;
+            $req = $request;
+             foreach($variants as $variant){
+                $options = $variant->options;
+                if(ProductVariants::find($variant->data->id)){
+                $product_variants = ProductVariants::findOrFail($variant->data->id)->update([
+                    'sku'=>$variant->data->sku,
+                    'barcode'=>$variant->data->barcode,
+                    'product_id'=>$request->product_id,
+                    'price'=>$variant->data->price,
+                    'weight'=>$variant->data->weight,
+                    'status'=>$variant->data->status,
+                    'image'=>''
+                ]);
+                
+                if ($request->hasFile($variant->data->id)) {
+                    $dest_path1 = 'storage/product/variants/images/'.$product_variants->image;
+                    if(File::exists($dest_path1)) {
+                        File::delete($dest_path1);
                     }
-                    $product->save();
-                } 
-                else {
-                    $data = ProductVariants::create([
-                        'name' => $variants[$i],
-                        'image' => '',
-                        'sku' => $variants[$i + 1],
-                        'barcode' => $variants[$i + 2],
-                        'unit_price' => $variants[$i + 3],
-                        'weight' => $variants[$i + 4],
-                        'status' => $variants[$i + 5],
-                        'product_id' => $request->product_id
-
-                    ]);
-
-                    $image_data = $variants[$i] . '_image';
-
-                    if ($request->hasFile($image_data)) {
-
-                        $dest_path = 'public/product/variants/images';
-                        $path = $request->file($image_data)->storeAs($dest_path, $image_data);
-                        $data->image = $image_data;
-                    }
-                    $data->save();
+                    $dest_path = 'public/product/variants/images';
+                    $path = $request->file($variant->data->id)->storeAs($dest_path, $product_variants->id . "_image");
+                    $product_variants->image = $product_variants->id . "_image";
+                
                 }
-            }
-            return response([
-                'Message' => 'Variants Updated',
-                'product_id' => $request->product_id
-            ], 201);
+                $product_variants->save();
+                }
+                else{
+                   //
+                }
         }
+    }
 
         if ($request->page == 'addons') {
 
@@ -326,7 +305,7 @@ class ProductController extends Controller
 
             foreach ($addons as $key => $value) {
                 
-                if($data =ProductAddons::where('product_id' ,$request->product_id )->where('name' , $addons[$key]->name)->first()){
+                if($data =ProductAddons::findOrFail($addons[$key]['id'])){
                 $data->update([
                     'name' => $addons[$key]->name,
                     'sku' => $addons[$key]->sku,
@@ -334,19 +313,23 @@ class ProductController extends Controller
                     'unit_price' => $addons[$key]->addons,
                     'weight' => $addons[$key]->weight,
                     'status' => $addons[$key]->status,
-                    
+                  
                 ]);
+                $Locals = new ProductLocalsController();
+                $Locals->editAddons($addons[$key] , $data->id);
                 }
                 else{
                     $data = ProductAddons::create([
-                        'name' => $addons[$key]->name,
-                        'sku' => $addons[$key]->sku,
-                        'barcode' => $addons[$key]->barcode,
-                        'unit_price' => $addons[$key]->addons,
-                        'weight' => $addons[$key]->weight,
-                        'status' => $addons[$key]->status,
+                        'sku' => $addons[$key]['sku'],
+                        'barcode' => $addons[$key]['barcode'],
+                        'unit_price' =>$addons[$key]['price'],
+                        'weight' => $addons[$key]['weight'],
+                        'status' => $addons[$key]['status'],
                         'product_id' => $request->product_id
                     ]);
+                    $Locals = new ProductLocalsController();
+                    $Locals->storeAddons($addons[$key] , $data->id);
+                   
                 }
             }
             return response([
@@ -413,18 +396,21 @@ class ProductController extends Controller
 
 
     public function showProducts($lang,$rest){
+        $rest_id =Rest::where('name' , $rest)->first()->id;
         $product = Product::with(["locals"=>function($query) use($lang){
             $query->where('lang' , $lang)->select('name','lang' , 'product_id');
         }])->with(["store"=>function($query) use($lang){
             $query->where('lang' , $lang)->select('name','lang' ,'store_id');
-        }])->select('id','image','store_id','rest_id','status')->where('rest_id' ,$rest)->get();
+        }])->select('id','image','store_id','rest_id','status')->where('rest_id' ,$rest_id)->get();
         
         return $product;
     }
 
     public function showId($id){
-        $product = Product::with('locals')->with('variants')
-        ->with('addons')->with('store')->find($id);
+        $product = Product::with('locals')->with(['variants'=>function($query){
+            $query->with('combination.localesOption')->with('combination.localesValue');
+        }])
+        ->with('addons.locales')->with('store')->find($id);
 
         return $product;
 

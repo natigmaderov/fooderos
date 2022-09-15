@@ -16,7 +16,11 @@ class VariantOptions extends Model
         'product_id',
         'status',
     ];
-
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
 
     public function locales(){
         return $this->hasMany(VariantOptionsLocales::class , 'variant_option_id');

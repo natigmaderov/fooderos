@@ -176,6 +176,7 @@ Route::get('/show' , [BranchCatagoryController::class , 'show']);
 
 Route::post('/options', [ProductController::class , 'storeOptions']);
 Route::post('/variants', [ProductController::class , 'storeVariants']);
+Route::post('/addons', [ProductController::class , 'storeAddons']);
 
 
 

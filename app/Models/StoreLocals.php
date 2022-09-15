@@ -15,6 +15,11 @@ class StoreLocals extends Model
         'lang',
         'store_id'
     ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
 
     public function store(){
 

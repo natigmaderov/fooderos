@@ -55,7 +55,7 @@ class ProductLocalsController extends Controller
         $languages = Language::all();
             foreach ($languages as $key => $value) {
                 $addonsLocals = AddonsLocals::create([
-                    'name' =>$data->$languages[$key]['lang'].'_name',
+                    'name' =>$data[$languages[$key]['lang'].'_name'],
                     'addon_id'=>$id,
                     'status'=>1,
                     'lang'=>$languages[$key]['lang']
@@ -63,5 +63,19 @@ class ProductLocalsController extends Controller
                 ]);
 
             }
+    }
+
+
+    public function editAddons($data , $id){
+
+        $languages =Language::all();
+        foreach ($languages as $key => $value){
+            $addonsLocals = AddonsLocals::where('addon_id',$id)->where('lang' , $languages[$key]['lang'])->update([
+                'name' =>$data[$languages[$key]['lang'].'_name'],
+                'addon_id'=>$id,
+                'status'=>1,
+                'lang'=>$languages[$key]['lang']
+            ]);
+        }
     }
 }

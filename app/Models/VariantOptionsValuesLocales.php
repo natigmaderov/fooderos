@@ -17,4 +17,9 @@ class VariantOptionsValuesLocales extends Model
         'status',
         'variant_option_value_id'
     ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
 }

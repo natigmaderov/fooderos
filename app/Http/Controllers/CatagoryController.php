@@ -130,7 +130,7 @@ class CatagoryController extends Controller
         $sub_catagory = CatagoryLocalsModel::where('name' , $request->catagory_sub)->first();
         $catagory = CatagoryModel::find($request->id);
        //update
-        $catagory->catagory_id = $sub_catagory->catagory_id;
+        $catagory->catagory_id = $sub_catagory->catagory_id??0;
         $catagory->store_id = StoreLocals::where('name',$request->store)->first()->store_id??0;
 
         if($request->hasFile('image')){

@@ -20,6 +20,11 @@ class ProductVariantsCombination extends Model
         'product_variant_id'
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
     public function scopeLocales(Builder $query){
             return $query->with(['localesValue'=>function($query){
                 $query->select('variant_option_value_id' , 'name' , 'lang');
