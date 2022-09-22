@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BranchCatalog;
 use App\Models\CatagoryLocalsModel;
 use App\Models\CatagoryModel;
 use App\Models\Rest;
@@ -16,6 +17,16 @@ use function PHPSTORM_META\map;
 
 class CatagoryController extends Controller
 {
+
+
+    public function __construct()
+    {
+        $catagoryCount =CatagoryModel::all();
+        foreach ($catagoryCount as $key => $value){
+                $catagoryCount[$key]->branch_count = count(BranchCatalog::where('catagory_id' ,$catagoryCount[$key]->id)->get());
+                $catagoryCount[$key]->save();
+        }
+    }
     //section 1
     public function show($lang , $rest){
         // $a = CatagoryModel::select('id','catagory_id')->get();
@@ -47,9 +58,8 @@ class CatagoryController extends Controller
         //             break;
         //         }
         //     }
-
+      
          
-        
         // return $tree;
         $rest_id =Rest::where('name' , $rest)->first()->id; 
         $test = array();

@@ -15,6 +15,7 @@ class VariantOptionsValuesLocales extends Model
         'name',
         'lang',
         'status',
+        'product_id',
         'variant_option_value_id'
     ];
     protected $hidden = [

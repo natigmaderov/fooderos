@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BranchCatagoryController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\BranchProductController;
 use App\Http\Controllers\BranchScheduleController;
 use App\Http\Controllers\CatagoryController;
 use App\Http\Controllers\Controller;
@@ -185,5 +186,10 @@ Route::prefix('test')->group(function($routes){
     Route::get('/variants/{id}' , [TestController::class , 'showVariants']);
     Route::post('/st1' , [TestController::class , 'statusVariants']);
     Route::post('/st2' , [TestController::class , 'statusOptions']);
+    Route::get('/dp/{id}' , [BranchProductController::class , 'getProducts']);
+    Route::post('/dp/{product}' , [BranchProductController::class , 'create']);
+
 
 });
+
+

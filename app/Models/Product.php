@@ -19,10 +19,11 @@ class Product extends Model
         'barcode',
         'price',
         'position_id',
-        'manager',
+        'manager_id',
         'isVariant',
         'isAddons',
         'isGroup',
+        'addons_limit',
         'status',
 
     ];
@@ -50,5 +51,10 @@ class Product extends Model
     public function store(){
 
         return $this->hasMany(StoreLocals::class ,'store_id' , 'store_id');
+    }
+
+    public function option(){
+
+        return $this->hasMany(VariantOptions::class , 'product_id');
     }
 }

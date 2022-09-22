@@ -46,10 +46,11 @@ class ProductController extends Controller
             'rest_id' => $rest->id,
             'barcode' => $request->barcode??'',
             'position_id' => $request->position_id??'',
-            'manager_id' => $manager->id??0,
+            'manager_id' => $manager->id,
             'price' => $request->price,
             'isVariant' => $request->isVariant,
             'isAddons' => $request->isAddons,
+            'addons_limit'=>0,
             'status' => 1
         ]);
 
@@ -106,6 +107,7 @@ class ProductController extends Controller
                     $option_values_locales = VariantOptionsValuesLocales::create([
                         'name'=>$val[$languages[$key]['lang'].'_name'],
                         'status'=>1,
+                        'product_id'=>$product_id,
                         'lang'=>$languages[$key]['lang'],
                         'variant_option_value_id'=>$option_values->id
                     ]);
@@ -153,7 +155,7 @@ class ProductController extends Controller
 
             $options = $variant->options;
             
-            $ids = VariantOptionsValuesLocales::whereIn('name' , $options)->pluck('variant_option_value_id');
+            $ids = VariantOptionsValuesLocales::whereIn('name' , $options)->where('product_id' , $request->product_id)->pluck('variant_option_value_id');
             $options = VariantOptionsValues::whereIn('id' , $ids)->select('id' , 'variant_option_id')->get();
             
 
@@ -199,6 +201,7 @@ class ProductController extends Controller
                 'unit_price' =>$addons[$key]['price'],
                 'weight' => $addons[$key]['weight'],
                 'status' => $addons[$key]['status'],
+                'addon_limit'=>$addons[$key]['limit'],
                 'product_id' => $request->product_id
             ]);
             $Locals = new ProductLocalsController();
@@ -228,6 +231,7 @@ class ProductController extends Controller
                 'rest',
                 'manager',
             ]);
+            return $request->barcode;
             $store = StoreLocals::where('name', $request->store)->first();
             $manager = Manager::where('name', $request->manager)->first();
             $product = Product::find($request->product_id);
@@ -262,36 +266,55 @@ class ProductController extends Controller
         if ($request->page == 'variants') {
             
             $variants = json_decode($request->test);
-
-            $req = $request;
+            $i = 0;
              foreach($variants as $variant){
-                $options = $variant->options;
-                if(ProductVariants::find($variant->data->id)){
-                $product_variants = ProductVariants::findOrFail($variant->data->id)->update([
-                    'sku'=>$variant->data->sku,
-                    'barcode'=>$variant->data->barcode,
-                    'product_id'=>$request->product_id,
-                    'price'=>$variant->data->price,
-                    'weight'=>$variant->data->weight,
-                    'status'=>$variant->data->status,
-                    'image'=>''
-                ]);
+                // $options = $variant->options;
+                if(ProductVariants::find($variant->id)){
+                $product = ProductVariants::find($variant->id);
                 
-                if ($request->hasFile($variant->data->id)) {
+                $product->update([
+                    'sku'=>$variant->sku,
+                    'barcode'=>$variant->barcode,
+                    'product_id'=>$request->product_id,
+                    'price'=>$variant->price,
+                    'weight'=>$variant->weight,
+                    'status'=>$variant->status,
+                ]);
+                if ($request->hasFile($i)) {
+                    $dest_path1 = 'storage/product/variants/images/'.$product->image;
+                    if(File::exists($dest_path1)) {
+                        File::delete($dest_path1);
+                    }
+                    $dest_path = 'public/product/variants/images';
+                    $path = $request->file($i)->storeAs($dest_path, $product->id . "_image");
+                    $product->image = $product->id . "_image";
+                
+                }
+                $product->save();
+                }
+                else{
+                   $product_variants = ProductVariants::create([
+                    'sku'=>$variant->sku,
+                    'barcode'=>$variant->barcode,
+                    'product_id'=>$request->product_id,
+                    'price'=>$variant->price,
+                    'weight'=>$variant->weight,
+                    'status'=>$variant->status,
+                    'image'=>''
+                   ]);
+                   if ($request->hasFile($i)) {
                     $dest_path1 = 'storage/product/variants/images/'.$product_variants->image;
                     if(File::exists($dest_path1)) {
                         File::delete($dest_path1);
                     }
                     $dest_path = 'public/product/variants/images';
-                    $path = $request->file($variant->data->id)->storeAs($dest_path, $product_variants->id . "_image");
+                    $path = $request->file($i)->storeAs($dest_path, $product_variants->id . "_image");
                     $product_variants->image = $product_variants->id . "_image";
                 
                 }
                 $product_variants->save();
                 }
-                else{
-                   //
-                }
+                $i++;
         }
     }
 
@@ -410,10 +433,11 @@ class ProductController extends Controller
         $product = Product::with('locals')->with(['variants'=>function($query){
             $query->with('combination.localesOption')->with('combination.localesValue');
         }])
-        ->with('addons.locales')->with('store')->find($id);
-
+        ->with('addons.locales')->with('store')->with(['option'=>function($query){
+            $query->with('locales')->with("values.values");
+        }])->find($id);
+        
         return $product;
-
     }
 
     public function test(Request $request){

@@ -13,16 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('branch_products', function (Blueprint $table) {
+        Schema::create('branch_product_addons', function (Blueprint $table) {
             $table->id();
-            $table->integer('branch_id');
-            $table->string('path');
-            $table->integer('product_id');
-            $table->integer('unit_price');
-            $table->integer('weight');
-            $table->integer('order_id');
-            $table->integer('isPublic');
+            $table->string('sku');
+            $table->string('barcode');
+            $table->string('unit_price');
+            $table->string('weigth');
             $table->integer('status');
+            $table->integer('branch_product_id');
+            $table->integer('addon_id');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -35,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('branch_products');
+        Schema::dropIfExists('branch_product_addons');
     }
 };

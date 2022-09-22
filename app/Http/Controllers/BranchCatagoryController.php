@@ -10,6 +10,14 @@ use Illuminate\Http\Request;
 
 class BranchCatagoryController extends Controller
 {
+    // public function __construct()
+    // {
+    //     $productCount =CatagoryModel::all();
+    //     foreach ($productCount as $key => $value){
+    //             $productCount[$key]->branch_count = count(BranchCatalog::where('catagory_id' ,$productCount[$key]->id)->get());
+    //             $productCount[$key]->save();
+    //     }
+    // }
     public function store(Request $request){
         $request->validate([
             'catagories' => 'required'

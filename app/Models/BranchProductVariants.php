@@ -6,32 +6,31 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ProductAddons extends Model
+
+class BranchProductVariants extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
-
-    protected $fillable = [
+    protected $fillable =[
+        'image',
+        'branch_product_id',
         'sku',
+        'variant_id',
         'barcode',
-        'unit_price',
+        'price',
         'weight',
         'status',
-        'product_id',
-        'addon_limit'
+
     ];
+
     protected $hidden = [
         'created_at',
         'updated_at',
         'deleted_at'
     ];
-    public function product(){
+    public function combination(){
 
-        return $this->belongsTo(Product::class);
-    }
-    public function locales(){
-
-        return $this->hasMany(AddonsLocals::class , 'addon_id');
+        return $this->hasMany(ProductVariantsCombination::class , 'product_variant_id' , 'variant_id');
     }
 }
