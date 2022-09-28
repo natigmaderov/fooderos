@@ -15,7 +15,7 @@ class TestController extends Controller
     public function showProducts(){
 
         return response ([
-            'product'=>ProductLocals::all()
+            'product'=>ProductLocals::where('lang', 'en')->get()
         ]);
     }
     public function showVariants($id){

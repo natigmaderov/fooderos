@@ -6,7 +6,9 @@ use App\Models\Branch;
 use App\Models\BranchCatalog;
 use App\Models\BranchLocals;
 use App\Models\CatagoryLocalsModel;
+use App\Models\CatagoryModel;
 use Illuminate\Http\Request;
+use PhpParser\Node\Expr\FuncCall;
 
 class BranchCatagoryController extends Controller
 {
@@ -18,18 +20,41 @@ class BranchCatagoryController extends Controller
     //             $productCount[$key]->save();
     //     }
     // }
+        // public function __construct(Request $request)
+        // {
+        //     $cats = CatagoryModel::all();
+
+        //     foreach($cats as $cat ){
+
+        //         if(!BranchCatalog::where('branch_id' ,$request->branch_id)->where('catagory_id' , $cat->id)->first()){
+        //         BranchCatalog::create([
+        //             'branch_id'=>$request->branch_id,
+        //             'catagory_id'=>$cat->id,
+        //             'status'=>1,
+        //             'parent_id'=>$cat->catagory_id,
+        //             'isActive'=>0,
+        //             'product_count'=>1
+        //         ]);
+
+        //     }
+        // }
+        // }
+
+
     public function store(Request $request){
         $request->validate([
-            'catagories' => 'required'
+            'catagories' => 'required',
+            'branch_id'=>'required'
         ]);
         $cats = $request->catagories;
         foreach($cats as $cat){
             $data = BranchCatalog::create([
                 'branch_id'=>$request->branch_id,
-                'catagory_id'=>$cat->catagory_id,
+                'catagory_id'=>$cat['catagory_id'],
                 'status'=>1,
-                'parent_id'=>$cat->parent_id,
-                'isActive'=>$cat->isActive,
+                'image'=>$cat['image'],
+                'parent_id'=>$cat['parent_id'],
+                'isActive'=>$cat['active'],
                 'product_count'=>0
             ]);
         }
@@ -41,14 +66,30 @@ class BranchCatagoryController extends Controller
     }
 
     public function edit(Request $request){
+        $cats = CatagoryModel::all();
+
+        foreach($cats as $cat ){
+            if(!BranchCatalog::where('branch_id' ,$request->branch_id)->where('catagory_id' , $cat->id)->first()){
+            BranchCatalog::create([
+                'branch_id'=>$request->branch_id,
+                'catagory_id'=>$cat->id,
+                'status'=>1,
+                'parent_id'=>$cat->catagory_id,
+                'isActive'=>0,
+                'product_count'=>1
+            ]);
+
+        }
+    }
         $request->validate([
             'branch_id'=>'required',
             'catagories'=>'required'
         ]);
+
         $cats = $request->catagories;
         foreach($cats as $cat) {
-            $data = BranchCatalog::where('branch_id' , $request->branch_id)->where('catagory_id' , $request->catagory_id)->first();
-            $data->isActive = $cat->isActive;
+            $data = BranchCatalog::where('branch_id' , $request->branch_id)->where('catagory_id' , $cat['catagory_id'])->first();
+            $data->isActive = $cat['isActive'];
             $data->save();
         }
 
@@ -81,14 +122,13 @@ class BranchCatagoryController extends Controller
             'message'=>'row removed !'
         ],201);
     }
-    public function show(){
-
-        $branchcatalogs = BranchCatalog::with(["sub"=>function($query) {
+    public function show($id , $lang ,Request $request){
+        $branchcatalogs = BranchCatalog::where('branch_id' , $id)->with(["sub"=>function($query) use ($request){
             $query->where('isActive' , '1');
-        }, ])->with(['catalocales'=>function($query){
-            $query->select('name' , 'catagory_id' , 'lang')->where('lang' , \request()->header('lang'));
+        }, ])->with(['catalocales'=>function($query) use ($request) {
+            $query->select('name' , 'catagory_id' , 'lang')->where('lang' , $request->lang);
         }])->where('parent_id' , 0)
-        ->where('isActive' , 1)->select('id','branch_id' , 'catagory_id','product_count','status' ,'parent_id' , 'isActive' )->get();
+        ->where('isActive' , 1)->get();
        
         return $branchcatalogs;
 

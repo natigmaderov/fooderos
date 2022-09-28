@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BranchProduct;
+use App\Models\BranchProductVariants;
 use App\Models\Product;
 use App\Models\ProductVariants;
 use App\Models\TempVariants;
@@ -22,7 +23,7 @@ class BranchProductController extends Controller
         
     }
 
-    public function create(Product $product , Request $request){
+    public function createMain(Product $product , Request $request){
         $validated = $request->validate([
         'isPublish'=>'required',
         'status'=>'required',
@@ -36,8 +37,30 @@ class BranchProductController extends Controller
         ]);
         $validated['product_id']= $product->id;
         $branchProduct = BranchProduct::create($validated);
-        return $branchProduct;
+
+        return response([
+            'message' => 'Main Branch Product Created !',
+            'branch_porduct_id'=>$branchProduct->id
+        ]);
     }
 
+
+    public function createVariants(BranchProductVariants $variant , Request $request){  
+
+        $request->validate([
+            'variants'=>'required'
+        ]);
+        $variants = $request->variants;
+        foreach($variants as $var){
+            $variant->create([
+                'image'=>$var->image,
+                'branch_product_id'=>$request->branch_product_id,
+                'sku'=>$var->sku,
+                'barcode'
+            ]);
+    
+        }
+        
+    }
 
 }

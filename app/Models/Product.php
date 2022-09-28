@@ -22,7 +22,6 @@ class Product extends Model
         'manager_id',
         'isVariant',
         'isAddons',
-        'isGroup',
         'addons_limit',
         'status',
 

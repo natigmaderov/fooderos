@@ -22,23 +22,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use PhpOption\Option;
+use Illuminate\Support\Facades\Validator;
+
 
 class ProductController extends Controller
 {
     public function storeProduct(Request $request)
     {
         $request->validate([
-            'sku',
-            'rest',
-            'manager',
-            'isVariant',
-            'isAddons',
-            'position_id'
+            'sku'=>'required',
+            'rest'=>'required',
+            'isVariant'=>'required',
+            'isAddons'=>'required',
+            'position_id'=>'required'
         ]);
 
         $rest = Rest::where('name', $request->rest)->first();
         $store = StoreLocals::where('name', $request->store)->first();
-        $manager = Manager::where('name', $request->manager)->first();
+        $manager = Manager::where('name', $request->manager)->first()??0;
         $product = Product::create([
             'store_id' => $store->store_id??0,
             'image' => '',
@@ -46,7 +47,7 @@ class ProductController extends Controller
             'rest_id' => $rest->id,
             'barcode' => $request->barcode??'',
             'position_id' => $request->position_id??'',
-            'manager_id' => $manager->id,
+            'manager_id' => $manager->id??0,
             'price' => $request->price,
             'isVariant' => $request->isVariant,
             'isAddons' => $request->isAddons,
@@ -120,7 +121,10 @@ class ProductController extends Controller
         
 
     }
-
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
     public function storeVariants(Request $request){
         // $request->validate([
         //     'variants'=>'required'
@@ -179,8 +183,11 @@ class ProductController extends Controller
 
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////
-
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 
 
     public function storeAddons(Request $request)
@@ -188,8 +195,11 @@ class ProductController extends Controller
 
         $request->validate([
             'product_id' => 'required',
-            'addons' => 'required'
+            'addons' => 'required',
+            'general_limit'=>'required'
         ]);
+        $product = Product::find($request->product_id);
+        $product->addons_limit = $request->general_limit;
         $addons = $request->addons;
         
         foreach ($addons as $key => $value) {
@@ -215,15 +225,18 @@ class ProductController extends Controller
         ], 201);
     }
 
-
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 
     public function editProduct(Request $request)
-    {
+        {
+        
         $request->validate([
-            'product_id' => 'required',
-            'page' => 'required'
+            'product_id'=>'required',
+            'page'=>'required'
         ]);
-
         if ($request->page == 'product') {
 
             $request->validate([
@@ -231,7 +244,7 @@ class ProductController extends Controller
                 'rest',
                 'manager',
             ]);
-            return $request->barcode;
+            
             $store = StoreLocals::where('name', $request->store)->first();
             $manager = Manager::where('name', $request->manager)->first();
             $product = Product::find($request->product_id);
@@ -241,6 +254,7 @@ class ProductController extends Controller
                 'barcode' => $request->barcode ?? '',
                 'position_id' => $request->position_id ?? '',
                 'manager' => $manager->id ?? 0,
+                'store_id' => $store->store_id??0,
                 'price' => $request->price,
             ]);
             if ($request->hasFile('image')) {
@@ -261,65 +275,41 @@ class ProductController extends Controller
 
             ], 201);
         }
+        if($request->page == 'options'){
+            $request->validate([
+                'options'=>'required'
+            ]);
 
-
-        if ($request->page == 'variants') {
+            $options = $request->options;
+            $languages = Language::all();
             
-            $variants = json_decode($request->test);
-            $i = 0;
-             foreach($variants as $variant){
-                // $options = $variant->options;
-                if(ProductVariants::find($variant->id)){
-                $product = ProductVariants::find($variant->id);
+            foreach($options as $option){
+
                 
-                $product->update([
-                    'sku'=>$variant->sku,
-                    'barcode'=>$variant->barcode,
-                    'product_id'=>$request->product_id,
-                    'price'=>$variant->price,
-                    'weight'=>$variant->weight,
-                    'status'=>$variant->status,
-                ]);
-                if ($request->hasFile($i)) {
-                    $dest_path1 = 'storage/product/variants/images/'.$product->image;
-                    if(File::exists($dest_path1)) {
-                        File::delete($dest_path1);
+                foreach($option['values'] as $val){
+                    $option_values = VariantOptionsValues::create([
+                        'status'=>1,
+                        'variant_option_id'=>$option["id"]
+                    ]);
+                    foreach($languages as $key => $value){
+                        $option_values_locales = VariantOptionsValuesLocales::create([
+                            'name'=>$val[$languages[$key]['lang'].'_name'],
+                            'status'=>1,
+                            'product_id'=>$request->product_id,
+                            'lang'=>$languages[$key]['lang'],
+                            'variant_option_value_id'=>$option_values->id
+                        ]);
                     }
-                    $dest_path = 'public/product/variants/images';
-                    $path = $request->file($i)->storeAs($dest_path, $product->id . "_image");
-                    $product->image = $product->id . "_image";
-                
                 }
-                $product->save();
-                }
-                else{
-                   $product_variants = ProductVariants::create([
-                    'sku'=>$variant->sku,
-                    'barcode'=>$variant->barcode,
-                    'product_id'=>$request->product_id,
-                    'price'=>$variant->price,
-                    'weight'=>$variant->weight,
-                    'status'=>$variant->status,
-                    'image'=>''
-                   ]);
-                   if ($request->hasFile($i)) {
-                    $dest_path1 = 'storage/product/variants/images/'.$product_variants->image;
-                    if(File::exists($dest_path1)) {
-                        File::delete($dest_path1);
-                    }
-                    $dest_path = 'public/product/variants/images';
-                    $path = $request->file($i)->storeAs($dest_path, $product_variants->id . "_image");
-                    $product_variants->image = $product_variants->id . "_image";
-                
-                }
-                $product_variants->save();
-                }
-                $i++;
+            }
+            return response([
+                'message'=> 'created  !'
+            ]);
         }
-    }
+      
 
         if ($request->page == 'addons') {
-
+            
             $request->validate([
                 'addons' => 'required'
             ]);
@@ -328,14 +318,16 @@ class ProductController extends Controller
 
             foreach ($addons as $key => $value) {
                 
-                if($data =ProductAddons::findOrFail($addons[$key]['id'])){
+                if($data =ProductAddons::find($addons[$key]['id'])){
                 $data->update([
-                    'name' => $addons[$key]->name,
-                    'sku' => $addons[$key]->sku,
-                    'barcode' => $addons[$key]->barcode,
-                    'unit_price' => $addons[$key]->addons,
-                    'weight' => $addons[$key]->weight,
-                    'status' => $addons[$key]->status,
+                    'sku' => $addons[$key]['sku'],
+                    'barcode' => $addons[$key]['barcode'],
+                    'unit_price' => $addons[$key]['price'],
+                    'addon_limit'=>$addons[$key]['limit'],
+                    'weight' => $addons[$key]['weight'],
+                    'status' => $addons[$key]['status'],
+                    'product_id' => $request->product_id
+
                   
                 ]);
                 $Locals = new ProductLocalsController();
@@ -347,6 +339,7 @@ class ProductController extends Controller
                         'barcode' => $addons[$key]['barcode'],
                         'unit_price' =>$addons[$key]['price'],
                         'weight' => $addons[$key]['weight'],
+                        'addon_limit'=>$addons[$key]['limit'],
                         'status' => $addons[$key]['status'],
                         'product_id' => $request->product_id
                     ]);
@@ -362,6 +355,101 @@ class ProductController extends Controller
         }
     }
 
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+
+    public function editVariants(Request $request){
+
+        $request->validate([
+            'variants'=>'required',
+            'product_id'=>'required',
+        ]);
+
+    //     $validator = Validator::make(request()->all(), [
+    //         'test' => 'required',
+    //         'product_id' => 'required'
+    //    ]);
+
+        $variants = json_decode($request->variants);
+
+        $i = 0;
+         foreach($variants as $variant){
+            // $options = $variant->options;
+            $id = $variant->id??0;
+            if(ProductVariants::find($id)){
+            $product = ProductVariants::find($variant->id);
+            
+            $product->update([
+                'sku'=>$variant->sku,
+                'barcode'=>$variant->barcode,
+                'product_id'=>$request->product_id,
+                'price'=>$variant->price,
+                'weight'=>$variant->weight,
+                'status'=>$variant->status,
+            ]);
+            if ($request->hasFile($i)) {
+                $dest_path1 = 'storage/product/variants/images/'.$product->image;
+                if(File::exists($dest_path1)) {
+                    File::delete($dest_path1);
+                }
+                $dest_path = 'public/product/variants/images';
+                $path = $request->file($i)->storeAs($dest_path, $product->id . "_image");
+                $product->image = $product->id . "_image";
+            
+            }
+            $product->save();
+            }
+            else{
+               $product_variants = ProductVariants::create([
+                'sku'=>$variant->sku,
+                'barcode'=>$variant->barcode,
+                'product_id'=>$request->product_id,
+                'price'=>$variant->price,
+                'weight'=>$variant->weight,
+                'status'=>$variant->status,
+                'image'=>''
+               ]);
+               if ($request->hasFile($i)) {
+                $dest_path1 = 'storage/product/variants/images/'.$product_variants->image;
+                if(File::exists($dest_path1)) {
+                    File::delete($dest_path1);
+                }
+                $dest_path = 'public/product/variants/images';
+                $path = $request->file($i)->storeAs($dest_path, $product_variants->id . "_image");
+                $product_variants->image = $product_variants->id . "_image";
+            
+            }
+            $product_variants->save();
+
+            $options = $variant->options;
+
+            
+            $ids = VariantOptionsValuesLocales::whereIn('name' , $options)->where('product_id' , $request->product_id)->pluck('variant_option_value_id');
+            $options = VariantOptionsValues::whereIn('id' , $ids)->select('id' , 'variant_option_id')->get();
+            
+
+            foreach($options as $option){
+                $combination = ProductVariantsCombination::create([
+                    'variant_option_values_id'=>$option->id,
+                    'variant_option_id'=>$option->variant_option_id,
+                    'status'=>$product_variants->status,
+                    'product_variant_id'=>$product_variants->id
+                ]);
+            }
+            }
+            $i++;
+    }
+
+    }
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
     public function delete(Request $request){
         $request->validate([
             'id'=>'required'
@@ -370,12 +458,21 @@ class ProductController extends Controller
         ProductAddons::where('product_id' ,$request->id)->delete();
         $variants = ProductVariants::where('product_id' ,$request->id)->get();
         $product = Product::find($request->id);
+
+        //option delete
+        $option = VariantOptions::where('product_id' ,$request->id)->pluck('id');
+        $optionV = VariantOptionsLocales::whereIn('variant_option_id' ,$option )->delete();
+        $value = VariantOptionsValues::whereIn('variant_option_id' , $option)->delete();
+        VariantOptionsValuesLocales::where('product_id' , $request->id)->delete();
+        VariantOptions::where('id' , $option)->delete();
+
         $dest_path1 = 'storage/product/images/'.$product->image;
-        if(File::exists($dest_path1)) 
+        if(File::exists($dest_path1))  
         {
             File::delete($dest_path1);
         }
         foreach($variants as $var){
+            ProductVariantsCombination::where('product_variant_id' , $var->id)->delete();
             if(File::exists('storage/product/variants/images'.$var->image)){
                File::delete($dest_path1);
             }
@@ -391,6 +488,10 @@ class ProductController extends Controller
         ],201);
         
     }
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 
     public function status(Request $request){
         $request->validate([
@@ -416,7 +517,10 @@ class ProductController extends Controller
         $product->save();
 
     }
-
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 
     public function showProducts($lang,$rest){
         $rest_id =Rest::where('name' , $rest)->first()->id;
@@ -428,7 +532,10 @@ class ProductController extends Controller
         
         return $product;
     }
-
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
     public function showId($id){
         $product = Product::with('locals')->with(['variants'=>function($query){
             $query->with('combination.localesOption')->with('combination.localesValue');
@@ -439,13 +546,9 @@ class ProductController extends Controller
         
         return $product;
     }
-
-    public function test(Request $request){
-        $test = json_decode($request->test);
-
-        return $test[0]->test ;
-
-    }
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 
 
 

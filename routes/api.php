@@ -136,6 +136,7 @@ Route::group(['middleware'=>'api'] , function ($routes){
         Route::post('/addons', [ProductController::class , 'storeAddons']);
         //editing products/variants/addons
         Route::post('/edit' , [ProductController::class , 'editProduct']);
+        Route::post('/edit/variants', [ProductController::class , 'editVariants']);
         //showing ....
         Route::get('show/{lang}/{rest}' , [ProductController::class , 'showProducts']);
         //showing inviduals
@@ -152,7 +153,7 @@ Route::group(['middleware'=>'api'] , function ($routes){
 
 
     Route::prefix('branch/catalogs')->group(function($routes){
-        Route::get('/show' , [BranchCatagoryController::class , 'show']);
+        Route::get('/show/{branch_id}/{lang}' , [BranchCatagoryController::class , 'show']);
         Route::post('/', [BranchCatagoryController::class , 'store']);
         Route::post('/status' , [BranchCatagoryController::class , 'status']);
         Route::post('/edit' , [BranchCatagoryController::class , 'edit']);
@@ -169,16 +170,17 @@ Route::get('city/{name}' , [CountryController::class , 'cities']);
 Route::get('store/list',[StoreController::class , 'StoreListClient']);
 Route::post('store/filter' ,[StoreController::class , 'StoreFilterClient']);
 
-Route::get('show/{lang}/{rest}' , [ProductController::class , 'showProducts']);
-Route::get('show/{id}' , [ProductController::class , 'showId']);
-Route::post('/test' , [ProductController::class  , 'test']);
+// Route::get('show/{lang}/{rest}' , [ProductController::class , 'showProducts']);
+// Route::get('show/{id}' , [ProductController::class , 'showId']);
+// Route::post('/test' , [ProductController::class  , 'test']);
 
-Route::get('/show' , [BranchCatagoryController::class , 'show']);
+Route::get('/show/{branch_id}/{lang}' , [BranchCatagoryController::class , 'show']);
 
 Route::post('/options', [ProductController::class , 'storeOptions']);
 Route::post('/variants', [ProductController::class , 'storeVariants']);
 Route::post('/addons', [ProductController::class , 'storeAddons']);
 
+Route::post('/edit/variants' , [ProductController::class , 'editVariants']);
 
 
 Route::prefix('test')->group(function($routes){
