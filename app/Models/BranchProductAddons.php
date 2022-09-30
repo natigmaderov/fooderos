@@ -19,6 +19,12 @@ class BranchProductAddons extends Model
         'branch_product_id',
         'addon_id'
     ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+
     public function locales(){
 
         return $this->hasMany(AddonsLocals::class , 'addon_id' , 'addon_id');

@@ -18,6 +18,7 @@ use App\Http\Controllers\UtulitiesController;
 use App\Http\Controllers\VisitorController;
 use App\Models\Branch;
 use App\Models\BranchCatalog;
+use App\Models\BranchProduct;
 use App\Models\Product;
 use App\Models\UserDetails;
 use App\Models\Visitor;
@@ -160,7 +161,15 @@ Route::group(['middleware'=>'api'] , function ($routes){
         Route::delete('/' , [BranchCatagoryController::class , 'delete']);
 
     });
-    
+
+    Route::prefix('branch/products')->group(function($routes){
+        Route::get('/show/{branch_id}/{lang}' , [BranchProductController::class , 'show']);
+        Route::post('/' , [BranchProductController::class , 'createMain']);
+        Route::post('/variats' , [BranchProductController::class , 'createVariants']);
+        Route::post('/create' , [BranchProductController::class , 'createAddons']);
+        Route::get('/show/{id}' , [BranchProductController::class , 'showID']);
+    });
+
 });
 //public apis
 Route::get('country',[CountryController::class ,'show']);
@@ -188,8 +197,10 @@ Route::prefix('test')->group(function($routes){
     Route::get('/variants/{id}' , [TestController::class , 'showVariants']);
     Route::post('/st1' , [TestController::class , 'statusVariants']);
     Route::post('/st2' , [TestController::class , 'statusOptions']);
-    Route::get('/dp/{id}' , [BranchProductController::class , 'getProducts']);
-    Route::post('/dp/{product}' , [BranchProductController::class , 'create']);
+    Route::get('/dp/{id}/{lang}' , [BranchProductController::class , 'show']);
+    Route::get('/dp/{id}' , [BranchProductController::class , 'showID']);
+    Route::get('/dps/{id}' , [BranchProductController::class , 'getProducts']);
+    Route::post('/dp/{product}' , [BranchProductController::class , 'createMain']);
 
 
 });

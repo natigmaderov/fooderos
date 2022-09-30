@@ -17,6 +17,12 @@ class CatagoryLocalsModel extends Model
         'catagory_id',
         'lang'
     ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+
 
     public function catagory(){
 
