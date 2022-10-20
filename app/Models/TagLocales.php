@@ -17,6 +17,11 @@ class TagLocales extends Model
         'lang'
 
     ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
 
 
     public function tag(){

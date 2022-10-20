@@ -11,6 +11,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\Customers\CustomerShowController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserDetailsController;
@@ -53,30 +54,28 @@ Route::group(['middleware'=>'api'] , function ($routes){
         //tags
         Route::get('/list/{lang}/{rest}' , [TagController::class , 'show']);
         Route::get('/list/{rest}' , [TagController::class , 'showAll']);
-        Route::get('/client/list/{lang}/{rest}' , [TagController::class ,'clientShow']);
-
         Route::post('/create',[TagController::class , 'create']);
         Route::put('/status' ,[TagController::class , 'status']);
         Route::post('/edit',[TagController::class , 'edit']);
         Route::delete('/delete',[TagController::class , 'delete']);
         Route::get('/show/{id}',[TagController::class , 'showID']);
-        //tag_types        
+        //tag_types
         Route::post('/type',[TagController::class , 'store']);
         Route::get('/type',[TagController::class , 'showTypes']);
         Route::put('/typestatus' , [TagController::class , 'TypeStatus']);
 
-       
+
     });
 
     Route::prefix('lang')->group(function($routes){
-      
+
         Route::post('/',[LangugeController::class , 'store']);
         Route::delete('/',[LangugeController::class , 'delete']);
         Route::get('/' , [LangugeController::class ,'show']);
     });
 
-    
-    
+
+
     Route::prefix('store')->group(function($routes){
         Route::get('/list/{lang}/{type}',[StoreController::class , 'show']);
         Route::post('/', [StoreController::class , 'store']);
@@ -97,10 +96,10 @@ Route::group(['middleware'=>'api'] , function ($routes){
         Route::post('/edit',[BranchController::class , 'edit']);
         Route::post('/status',[BranchController::class , 'status']);
         Route::delete('/' , [BranchController::class , 'delete']);
-        
+
     });
 
-    
+
     Route::prefix('settings')->group(function($routes){
         Route::get('/paymentoptions' , [UtulitiesController::class , 'paymentOptions']);
         Route::post('/currency' , [UtulitiesController::class , 'addCurrency']);
@@ -122,10 +121,10 @@ Route::group(['middleware'=>'api'] , function ($routes){
     Route::prefix('catagory')->group(function($routes){
         Route::get('/show/{lang}/{rest}' , [CatagoryController::class , 'show']);
         Route::get('/shows/{id}/{lang}' , [CatagoryController::class , 'showID']);
-        Route::post('/' , [CatagoryController::class , 'store']); 
-        Route::post('/edit' , [CatagoryController::class , 'edit']);   
+        Route::post('/' , [CatagoryController::class , 'store']);
+        Route::post('/edit' , [CatagoryController::class , 'edit']);
         Route::delete('/' , [CatagoryController::class , 'delete']);
-        Route::get('/list/{lang}/{rest}' ,[CatagoryController::class , 'list']); 
+        Route::get('/list/{lang}/{rest}' ,[CatagoryController::class , 'list']);
         Route::post('/status' , [CatagoryController::class , 'status']);
 
     });
@@ -142,7 +141,7 @@ Route::group(['middleware'=>'api'] , function ($routes){
         Route::get('show/{lang}/{rest}' , [ProductController::class , 'showProducts']);
         //showing inviduals
         Route::get('show/{id}' , [ProductController::class , 'showId']);
-        //status change 
+        //status change
         Route::post('/status' , [ProductController::class , 'status']);
         //delete
         Route::delete('/' , [ProductController::class , 'delete']);
@@ -164,6 +163,7 @@ Route::group(['middleware'=>'api'] , function ($routes){
 
     Route::prefix('branch/products')->group(function($routes){
         Route::get('/show/{branch_id}/{lang}' , [BranchProductController::class , 'show']);
+        Route::get('/get/product/{id}' , [BranchProductController::class, 'getProducts']);
         Route::post('/' , [BranchProductController::class , 'createMain']);
         Route::post('/variats' , [BranchProductController::class , 'createVariants']);
         Route::post('/create' , [BranchProductController::class , 'createAddons']);
@@ -174,11 +174,12 @@ Route::group(['middleware'=>'api'] , function ($routes){
 //public apis
 Route::get('country',[CountryController::class ,'show']);
 Route::get('city/{name}' , [CountryController::class , 'cities']);
-
-
 Route::get('store/list',[StoreController::class , 'StoreListClient']);
 Route::post('store/filter' ,[StoreController::class , 'StoreFilterClient']);
 
+
+Route::get('client/tag/list/{lang}/{rest}' , [TagController::class ,'clientShow']);
+Route::get('client/restaurant/list/{lang}/{rest}' , [CustomerShowController::class , 'getRestaurants']);
 // Route::get('show/{lang}/{rest}' , [ProductController::class , 'showProducts']);
 // Route::get('show/{id}' , [ProductController::class , 'showId']);
 // Route::post('/test' , [ProductController::class  , 'test']);
@@ -192,17 +193,17 @@ Route::post('/addons', [ProductController::class , 'storeAddons']);
 Route::post('/edit/variants' , [ProductController::class , 'editVariants']);
 
 
-Route::prefix('test')->group(function($routes){
-    Route::get('/product' , [TestController::class , 'showProducts']);
-    Route::get('/variants/{id}' , [TestController::class , 'showVariants']);
-    Route::post('/st1' , [TestController::class , 'statusVariants']);
-    Route::post('/st2' , [TestController::class , 'statusOptions']);
-    Route::get('/dp/{id}/{lang}' , [BranchProductController::class , 'show']);
-    Route::get('/dp/{id}' , [BranchProductController::class , 'showID']);
-    Route::get('/dps/{id}' , [BranchProductController::class , 'getProducts']);
-    Route::post('/dp/{product}' , [BranchProductController::class , 'createMain']);
+// Route::prefix('test')->group(function($routes){
+//     Route::get('/product' , [TestController::class , 'showProducts']);
+//     Route::get('/variants/{id}' , [TestController::class , 'showVariants']);
+//     Route::post('/st1' , [TestController::class , 'statusVariants']);
+//     Route::post('/st2' , [TestController::class , 'statusOptions']);
+//     Route::get('/dp/{id}/{lang}' , [BranchProductController::class , 'show']);
+//     Route::get('/dp/{id}' , [BranchProductController::class , 'showID']);
+//     Route::get('/dps/{id}' , [BranchProductController::class , 'getProducts']);
+//     Route::post('/dp/{product}' , [BranchProductController::class , 'createMain']);
 
 
-});
+// });
 
 

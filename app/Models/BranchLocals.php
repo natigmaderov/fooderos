@@ -19,7 +19,11 @@ class BranchLocals extends Model
         'branch_id'
     ];
 
-
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
     public function branch(){
 
         return $this->belongsTo(Branch::class);

@@ -32,7 +32,7 @@ trait BranchProductTrait {
         }])
         ->with('addons.locales')->with('store')->with(['option'=>function($query){
             $query->with('locales')->with("values.values");
-        }])->find(1);
+        }])->find($id);
 
         return $product;
     }

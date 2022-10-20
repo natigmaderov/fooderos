@@ -33,6 +33,11 @@ class Branch extends Model
         'max_distance'
     
     ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
     
     public function schedule(){
 
@@ -41,6 +46,10 @@ class Branch extends Model
 
     public function locals(){
         return $this->hasMany(BranchLocals::class);
+    }
+
+    public function stores(){
+        return $this->belongsTo(Store::class , 'store_id' , 'id');
     }
 
 }

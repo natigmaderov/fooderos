@@ -35,6 +35,7 @@ class BranchProductController extends Controller
     }
 
     public function getProducts($id){
+
        return $this->getProductsById($id);
         
     }
@@ -109,8 +110,8 @@ class BranchProductController extends Controller
 
    
 
-    public function edit(){
+    // public function edit(){
         
-    }
+    // }
 
 }

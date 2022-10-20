@@ -21,7 +21,11 @@ class Store extends Model
         'store_type',
         'status'
     ];
-
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
 
     public function tags(){
 
